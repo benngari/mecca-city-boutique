@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
-import { SHOP_NAME } from '@/lib/constants';
+import { LOGO_URL } from '@/lib/constants';
 
 const LINKS = [
   { href: '/', label: 'Home' },
@@ -18,8 +19,11 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-navy-100 bg-cream/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-        <Link href="/" className="font-display text-xl font-bold tracking-tight text-navy md:text-2xl">
-          Mecca <span className="text-electric">City</span> <span className="text-emerald">Boutique</span>
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src={LOGO_URL} alt="Mecca City Boutique logo" width={36} height={36} className="rounded-md" />
+          <span className="font-display text-xl font-bold tracking-tight text-navy md:text-2xl">
+            Mecca <span className="text-electric">City</span> <span className="text-emerald">Boutique</span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

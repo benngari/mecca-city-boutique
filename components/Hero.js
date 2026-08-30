@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { buildWhatsAppLink, generalWhatsAppMessage } from '@/lib/whatsapp';
+import { LOGO_URL } from '@/lib/constants';
 
 export default function Hero() {
   const waHref = buildWhatsAppLink(generalWhatsAppMessage());
@@ -38,7 +40,7 @@ export default function Hero() {
             >
               Shop Now
             </Link>
-            <a
+            
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
@@ -52,10 +54,7 @@ export default function Hero() {
         <div className="relative animate-fadeUp [animation-delay:150ms]">
           <div className="mx-auto grid max-w-sm grid-cols-2 gap-4">
             <div className="col-span-2 flex h-40 items-center justify-center rounded-2xl border border-cream/10 bg-gradient-to-br from-electric/20 to-transparent p-6 text-center">
-              <p className="font-display text-2xl font-semibold text-cream">
-                MB
-                <span className="mx-1 text-gold">★</span>
-              </p>
+              <Image src={LOGO_URL} alt="Mecca City Boutique logo" width={120} height={120} className="h-24 w-24 object-contain" />
             </div>
             <div className="h-32 rounded-2xl bg-emerald/20" />
             <div className="h-32 rounded-2xl bg-electric/20" />
