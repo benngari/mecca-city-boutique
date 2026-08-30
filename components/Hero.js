@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import Image from 'next/image';
 import { buildWhatsAppLink, generalWhatsAppMessage } from '@/lib/whatsapp';
 import { LOGO_URL } from '@/lib/constants';
@@ -29,7 +29,7 @@ export default function Hero() {
             <span className="text-electric-400">Wear</span> the <span className="text-emerald">boutique</span>.
           </h1>
           <p className="mt-6 max-w-md text-base text-navy-100">
-            Curated dresses, skirts, jerseys, cocktail perfumes and more — hand-picked in Chuka,
+            Curated dresses, skirts, jerseys, cocktail perfumes and more - hand-picked in Chuka,
             delivered with a message away on WhatsApp.
           </p>
 
@@ -40,14 +40,14 @@ export default function Hero() {
             >
               Shop Now
             </Link>
-            
+            <Link
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-full border border-cream/30 px-7 py-3.5 text-sm font-semibold text-cream transition-colors hover:border-emerald hover:text-emerald"
             >
               Order on WhatsApp
-            </a>
+            </Link>
           </div>
         </div>
 
