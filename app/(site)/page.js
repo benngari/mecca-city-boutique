@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { connectDB } from '@/lib/mongodb';
@@ -6,8 +6,9 @@ import Product from '@/models/Product';
 import Hero from '@/components/Hero';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import CategoryCard from '@/components/CategoryCard';
-import { CATEGORIES, SHOP_LOCATION, SHOP_PHONES } from '@/lib/constants';
+import { SHOP_LOCATION, SHOP_PHONES } from '@/lib/constants';
 import { buildWhatsAppLink, generalWhatsAppMessage } from '@/lib/whatsapp';
+import { getCategoriesWithPreview } from '@/lib/categories';
 
 async function getFeatured() {
   await connectDB();
@@ -15,15 +16,8 @@ async function getFeatured() {
   return JSON.parse(JSON.stringify(products));
 }
 
-async function getCategoryCounts() {
-  await connectDB();
-  const counts = await Product.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]);
-  const countMap = Object.fromEntries(counts.map((c) => [c._id, c.count]));
-  return CATEGORIES.map((c) => ({ ...c, count: countMap[c.slug] || 0 }));
-}
-
 export default async function HomePage() {
-  const [featured, categories] = await Promise.all([getFeatured(), getCategoryCounts()]);
+  const [featured, categories] = await Promise.all([getFeatured(), getCategoriesWithPreview()]);
   const waHref = buildWhatsAppLink(generalWhatsAppMessage());
 
   return (
@@ -52,7 +46,7 @@ export default async function HomePage() {
               New wine dresses just landed
             </h2>
             <p className="mt-4 max-w-md text-navy-200">
-              Every piece is picked for how it actually moves and photographs — not just how it
+              Every piece is picked for how it actually moves and photographs - not just how it
               hangs on the rack. Limited stock, no restocks on some styles.
             </p>
             <Link
@@ -80,7 +74,7 @@ export default async function HomePage() {
             <p className="mt-4 text-navy-500">
               Based in Ndagani, Chuka, Mecca City Boutique has been dressing the town in dresses,
               skirts, tops, jerseys and cocktail scents that don't feel mass-produced. We stock
-              what we'd actually wear — and we're one WhatsApp message away when you need it fast.
+              what we'd actually wear - and we're one WhatsApp message away when you need it fast.
             </p>
             <Link href="/about" className="mt-4 inline-block text-sm font-semibold text-electric hover:text-navy">
               Read our full story &rarr;
@@ -95,14 +89,14 @@ export default async function HomePage() {
                 <li key={phone}>{phone}</li>
               ))}
             </ul>
-            <a
+            <Link
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-5 inline-block rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald/90"
             >
               Chat on WhatsApp
-            </a>
+            </Link>
           </div>
         </div>
       </section>
