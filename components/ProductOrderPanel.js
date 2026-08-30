@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
 
 export default function ProductOrderPanel({ productName, sizes, soldOut }) {
@@ -34,14 +35,14 @@ export default function ProductOrderPanel({ productName, sizes, soldOut }) {
       )}
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        
+        <Link
           href={waHref}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 rounded-full bg-emerald px-6 py-3.5 text-center text-sm font-semibold text-white hover:bg-emerald/90"
         >
           {soldOut ? 'Ask About Restock on WhatsApp' : 'Order on WhatsApp'}
-        </a>
+        </Link>
       </div>
     </>
   );
