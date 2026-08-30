@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export default function AdminLoginPage() {
@@ -18,10 +18,18 @@ function AdminLoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [loggedOutNotice, setLoggedOutNotice] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('loggedout') === 'true') {
+      setLoggedOutNotice(true);
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    setLoggedOutNotice(false);
     setLoading(true);
 
     try {
@@ -39,7 +47,9 @@ function AdminLoginForm() {
       }
 
       setSuccess(true);
-      window.location.href = searchParams.get('next') || '/admin';
+      setTimeout(() => {
+        window.location.href = searchParams.get('next') || '/admin';
+      }, 800);
     } catch {
       setError('Something went wrong. Try again.');
       setLoading(false);
@@ -51,6 +61,18 @@ function AdminLoginForm() {
       <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
         <p className="font-display text-2xl font-bold text-navy">Admin Login</p>
         <p className="mt-1 text-sm text-navy-400">Mecca City Boutique</p>
+
+        {loggedOutNotice && !success && (
+          <p className="mt-4 rounded-lg bg-navy-50 px-3 py-2 text-sm text-navy-500">
+            You have been logged out.
+          </p>
+        )}
+
+        {success && (
+          <p className="mt-4 flex items-center gap-2 rounded-lg bg-emerald/10 px-3 py-2 text-sm font-semibold text-emerald">
+            Login successful - redirecting...
+          </p>
+        )}
 
         {error && (
           <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
@@ -83,7 +105,7 @@ function AdminLoginForm() {
           disabled={loading || success}
           className="mt-6 w-full rounded-full bg-navy py-3 text-sm font-semibold text-cream hover:bg-electric disabled:opacity-60"
         >
-          {success ? 'Signed in, redirecting...' : loading ? 'Signing in...' : 'Sign In'}
+          {success ? 'Signed in...' : loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
     </div>

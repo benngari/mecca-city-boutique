@@ -14,7 +14,7 @@ export default function AdminSidebar() {
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
-    window.location.href = '/admin/login';
+    window.location.href = '/admin/login?loggedout=true';
   }
 
   return (
