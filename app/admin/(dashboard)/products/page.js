@@ -8,6 +8,7 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [sellingId, setSellingId] = useState(null);
 
   async function loadProducts() {
     setLoading(true);
@@ -32,6 +33,29 @@ export default function AdminProductsPage() {
       setProducts((prev) => prev.filter((p) => p._id !== id));
     } else {
       alert('Failed to delete product.');
+    }
+  }
+
+  async function handleRecordSale(id) {
+    setSellingId(id);
+    try {
+      const res = await fetch(`/api/products/${id}/sell`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: 1 }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Could not record sale.');
+        return;
+      }
+
+      setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+    } catch {
+      alert('Something went wrong. Try again.');
+    } finally {
+      setSellingId(null);
     }
   }
 
@@ -70,7 +94,7 @@ export default function AdminProductsPage() {
       </form>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white">
-        <table className="w-full min-w-[640px] text-sm">
+        <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-navy-100 text-left text-xs uppercase tracking-wide text-navy-400">
               <th className="px-4 py-3">Product</th>
@@ -92,7 +116,7 @@ export default function AdminProductsPage() {
             {!loading && products.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-navy-300">
-                  No products yet — add your first product.
+                  No products yet - add your first product.
                 </td>
               </tr>
             )}
@@ -125,10 +149,22 @@ export default function AdminProductsPage() {
                   >
                     {p.stockStatus.replace('_', ' ')}
                   </span>
+                  {p.stockQuantity != null && (
+                    <p className="mt-1 text-xs text-navy-400">{p.stockQuantity} left</p>
+                  )}
                 </td>
-                <td className="px-4 py-3">{p.featured ? '★' : '—'}</td>
+                <td className="px-4 py-3">{p.featured ? '★' : '-'}</td>
                 <td className="px-4 py-3 text-right">
-                  <div className="flex justify-end gap-3">
+                  <div className="flex flex-wrap justify-end gap-3">
+                    {p.stockQuantity != null && p.stockQuantity > 0 && (
+                      <button
+                        onClick={() => handleRecordSale(p._id)}
+                        disabled={sellingId === p._id}
+                        className="font-semibold text-emerald disabled:opacity-50"
+                      >
+                        {sellingId === p._id ? 'Recording...' : 'Record Sale'}
+                      </button>
+                    )}
                     <Link href={`/admin/products/${p._id}/edit`} className="font-semibold text-electric">
                       Edit
                     </Link>

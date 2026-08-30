@@ -14,13 +14,18 @@ const EMPTY = {
   images: [],
   sizes: [],
   stockStatus: 'in_stock',
+  stockQuantity: '',
   featured: false,
   sku: '',
 };
 
 export default function ProductForm({ initialProduct, productId }) {
   const router = useRouter();
-  const [form, setForm] = useState(initialProduct ? { ...EMPTY, ...initialProduct } : EMPTY);
+  const [form, setForm] = useState(
+    initialProduct
+      ? { ...EMPTY, ...initialProduct, stockQuantity: initialProduct.stockQuantity ?? '' }
+      : EMPTY
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [customSizeInput, setCustomSizeInput] = useState('');
@@ -40,7 +45,6 @@ export default function ProductForm({ initialProduct, productId }) {
     e.preventDefault();
     const value = customSizeInput.trim();
     if (!value) return;
-    // supports comma-separated entry, e.g. "30, 31, 32"
     const parts = value.split(',').map((s) => s.trim()).filter(Boolean);
     setForm((prev) => ({
       ...prev,
@@ -58,10 +62,19 @@ export default function ProductForm({ initialProduct, productId }) {
     setError('');
     setSaving(true);
 
+    const hasQuantity = form.stockQuantity !== '' && form.stockQuantity !== null;
+    const stockQuantity = hasQuantity ? Number(form.stockQuantity) : null;
+    let stockStatus = form.stockStatus;
+    if (hasQuantity) {
+      stockStatus = stockQuantity === 0 ? 'sold_out' : stockQuantity <= 3 ? 'low_stock' : 'in_stock';
+    }
+
     const payload = {
       ...form,
       price: Number(form.price),
       discountPrice: form.discountPrice ? Number(form.discountPrice) : null,
+      stockQuantity,
+      stockStatus,
     };
 
     try {
@@ -237,19 +250,38 @@ export default function ProductForm({ initialProduct, productId }) {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block text-sm font-semibold text-navy">
-          Stock Status
+          Stock Quantity (optional)
+          <input
+            type="number"
+            min="0"
+            value={form.stockQuantity}
+            onChange={(e) => update('stockQuantity', e.target.value)}
+            placeholder="e.g. 12"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          />
+          <span className="mt-1 block text-xs font-normal text-navy-400">
+            Set this to track exact stock. Status below updates automatically from it. Leave
+            blank to set status manually instead.
+          </span>
+        </label>
+
+        <label className="block text-sm font-semibold text-navy">
+          Stock Status {form.stockQuantity !== '' && <span className="text-navy-300">(auto)</span>}
           <select
             value={form.stockStatus}
+            disabled={form.stockQuantity !== ''}
             onChange={(e) => update('stockStatus', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none disabled:bg-navy-50 disabled:text-navy-400"
           >
             <option value="in_stock">In Stock</option>
             <option value="low_stock">Low Stock</option>
             <option value="sold_out">Sold Out</option>
           </select>
         </label>
+      </div>
 
-        <label className="mt-7 flex items-center gap-2 text-sm font-semibold text-navy">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="flex items-center gap-2 text-sm font-semibold text-navy">
           <input
             type="checkbox"
             checked={form.featured}

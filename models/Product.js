@@ -23,6 +23,7 @@ const ProductSchema = new mongoose.Schema(
       enum: ['in_stock', 'low_stock', 'sold_out'],
       default: 'in_stock',
     },
+    stockQuantity: { type: Number, min: 0, default: null },
     featured: { type: Boolean, default: false },
     sku: { type: String, required: true, unique: true, trim: true },
   },
