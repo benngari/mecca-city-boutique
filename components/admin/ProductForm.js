@@ -23,6 +23,7 @@ export default function ProductForm({ initialProduct, productId }) {
   const [form, setForm] = useState(initialProduct ? { ...EMPTY, ...initialProduct } : EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [customSizeInput, setCustomSizeInput] = useState('');
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -33,6 +34,23 @@ export default function ProductForm({ initialProduct, productId }) {
       ...prev,
       sizes: prev.sizes.includes(size) ? prev.sizes.filter((s) => s !== size) : [...prev.sizes, size],
     }));
+  }
+
+  function addCustomSize(e) {
+    e.preventDefault();
+    const value = customSizeInput.trim();
+    if (!value) return;
+    // supports comma-separated entry, e.g. "30, 31, 32"
+    const parts = value.split(',').map((s) => s.trim()).filter(Boolean);
+    setForm((prev) => ({
+      ...prev,
+      sizes: [...prev.sizes, ...parts.filter((p) => !prev.sizes.includes(p))],
+    }));
+    setCustomSizeInput('');
+  }
+
+  function removeSize(size) {
+    setForm((prev) => ({ ...prev, sizes: prev.sizes.filter((s) => s !== size) }));
   }
 
   async function handleSubmit(e) {
@@ -154,6 +172,10 @@ export default function ProductForm({ initialProduct, productId }) {
 
       <div>
         <p className="text-sm font-semibold text-navy">Available Sizes</p>
+        <p className="mt-0.5 text-xs text-navy-400">
+          Tap standard sizes below, or type custom sizes (e.g. jeans 30, 31, 32 or bra 34B) and press Add.
+        </p>
+
         <div className="mt-2 flex flex-wrap gap-2">
           {SIZES.map((size) => (
             <button
@@ -170,6 +192,47 @@ export default function ProductForm({ initialProduct, productId }) {
             </button>
           ))}
         </div>
+
+        <div className="mt-3 flex gap-2">
+          <input
+            type="text"
+            value={customSizeInput}
+            onChange={(e) => setCustomSizeInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') addCustomSize(e);
+            }}
+            placeholder="Custom size, e.g. 30, 31, 32"
+            className="w-full max-w-xs rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={addCustomSize}
+            className="rounded-lg bg-navy-100 px-4 py-2 text-xs font-semibold text-navy hover:bg-navy-200"
+          >
+            Add
+          </button>
+        </div>
+
+        {form.sizes.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {form.sizes.map((size) => (
+              <span
+                key={size}
+                className="flex items-center gap-1.5 rounded-full bg-emerald/10 px-3 py-1.5 text-xs font-semibold text-emerald"
+              >
+                {size}
+                <button
+                  type="button"
+                  onClick={() => removeSize(size)}
+                  aria-label={`Remove size ${size}`}
+                  className="text-emerald/70 hover:text-emerald"
+                >
+                  x
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
