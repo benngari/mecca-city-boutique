@@ -19,10 +19,7 @@ export default function Hero() {
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-16 md:grid-cols-2 md:items-center md:px-8 md:py-24">
         <div className="animate-fadeUp">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-electric/40 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-electric-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-            Ndagani, Chuka
-          </p>
+          
           <h1 className="font-display text-4xl font-bold leading-[1.05] text-cream sm:text-5xl lg:text-6xl">
             Dress the city.
             <br />

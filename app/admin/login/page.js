@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { Suspense, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function AdminLoginPage() {
   return (
@@ -12,12 +12,12 @@ export default function AdminLoginPage() {
 }
 
 function AdminLoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,14 +34,14 @@ function AdminLoginForm() {
 
       if (!res.ok) {
         setError(data.error || 'Login failed');
+        setLoading(false);
         return;
       }
 
-      router.push(searchParams.get('next') || '/admin');
-      router.refresh();
+      setSuccess(true);
+      window.location.href = searchParams.get('next') || '/admin';
     } catch {
       setError('Something went wrong. Try again.');
-    } finally {
       setLoading(false);
     }
   }
@@ -80,10 +80,10 @@ function AdminLoginForm() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || success}
           className="mt-6 w-full rounded-full bg-navy py-3 text-sm font-semibold text-cream hover:bg-electric disabled:opacity-60"
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {success ? 'Signed in, redirecting...' : loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
     </div>

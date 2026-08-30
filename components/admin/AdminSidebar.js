@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const LINKS = [
   { href: '/admin', label: 'Dashboard' },
@@ -11,21 +11,19 @@ const LINKS = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/admin/login');
-    router.refresh();
+    window.location.href = '/admin/login';
   }
 
   return (
-    <aside className="flex w-full flex-row justify-between border-b border-navy-700 bg-navy-900 p-4 md:h-screen md:w-60 md:flex-col md:justify-start md:gap-1 md:border-b-0 md:border-r md:p-6">
+    <aside className="flex w-full flex-col justify-between border-b border-navy-700 bg-navy-900 p-4 md:h-screen md:w-60 md:gap-1 md:border-b-0 md:border-r md:p-6">
       <div>
         <p className="font-display text-lg font-bold text-cream md:mb-8">
           MCB <span className="text-electric-400">Admin</span>
         </p>
-        <nav className="hidden flex-col gap-1 md:flex">
+        <nav className="mt-3 flex flex-wrap gap-1 md:mt-0 md:flex-col">
           {LINKS.map((link) => {
             const active = pathname === link.href;
             return (
@@ -45,7 +43,7 @@ export default function AdminSidebar() {
 
       <button
         onClick={handleLogout}
-        className="h-fit rounded-lg px-3 py-2.5 text-sm font-semibold text-navy-200 hover:bg-navy-700"
+        className="mt-3 h-fit w-fit rounded-lg px-3 py-2.5 text-sm font-semibold text-navy-200 hover:bg-navy-700 md:mt-0"
       >
         Log Out
       </button>
