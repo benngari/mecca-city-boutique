@@ -19,7 +19,6 @@ export default function Hero() {
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-16 md:grid-cols-2 md:items-center md:px-8 md:py-24">
         <div className="animate-fadeUp">
-          
           <h1 className="font-display text-4xl font-bold leading-[1.05] text-cream sm:text-5xl lg:text-6xl">
             Dress the city.
             <br />
