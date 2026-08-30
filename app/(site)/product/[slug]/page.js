@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import ProductGrid from '@/components/ProductGrid';
-import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
+import ProductOrderPanel from '@/components/ProductOrderPanel';
 import { CATEGORIES } from '@/lib/constants';
 
 async function getProduct(slug) {
@@ -40,7 +40,6 @@ export default async function ProductPage({ params }) {
   if (!product) notFound();
 
   const related = await getRelated(product.category, product._id);
-  const waHref = buildWhatsAppLink(productWhatsAppMessage(product.name));
   const categoryName = CATEGORIES.find((c) => c.slug === product.category)?.name || product.category;
   const soldOut = product.stockStatus === 'sold_out';
 
@@ -93,7 +92,7 @@ export default async function ProductPage({ params }) {
             {soldOut ? (
               <span className="text-red-600">Sold Out</span>
             ) : product.stockStatus === 'low_stock' ? (
-              <span className="text-gold">Low Stock — order soon</span>
+              <span className="text-gold">Low Stock - order soon</span>
             ) : (
               <span className="text-emerald">In Stock</span>
             )}
@@ -103,29 +102,7 @@ export default async function ProductPage({ params }) {
 
           <p className="whitespace-pre-line text-navy-500">{product.description}</p>
 
-          {product.sizes?.length > 0 && (
-            <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wide text-navy-400">Available sizes</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <span key={size} className="rounded-full border border-navy-200 px-3 py-1 text-sm text-navy">
-                    {size}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 rounded-full bg-emerald px-6 py-3.5 text-center text-sm font-semibold text-white hover:bg-emerald/90"
-            >
-              {soldOut ? 'Ask About Restock on WhatsApp' : 'Order on WhatsApp'}
-            </a>
-          </div>
+          <ProductOrderPanel productName={product.name} sizes={product.sizes || []} soldOut={soldOut} />
 
           <p className="mt-3 text-xs text-navy-400">SKU: {product.sku}</p>
         </div>
