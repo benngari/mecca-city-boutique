@@ -48,9 +48,9 @@ export default function Hero() {
         </div>
 
         <div className="relative animate-fadeUp [animation-delay:150ms]">
-          <div className="relative mx-auto h-80 max-w-sm overflow-hidden rounded-2xl border border-cream/10 bg-navy-800 sm:h-96">
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl border border-cream/10 bg-navy-800">
             {HERO_IMAGE && (
-              <Image src={HERO_IMAGE} alt="Mecca City Boutique shop" fill sizes="400px" className="object-cover" />
+              <Image src={HERO_IMAGE} alt="Mecca City Boutique shop" fill sizes="500px" className="object-cover" />
             )}
           </div>
           <div className="mt-4 rounded-2xl border border-cream/10 bg-white/5 p-4 text-center backdrop-blur-sm">
