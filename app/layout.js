@@ -1,6 +1,6 @@
-import { Playfair_Display, Manrope } from 'next/font/google';
+﻿import { Playfair_Display, Manrope } from 'next/font/google';
 import './globals.css';
-import { SHOP_NAME } from '@/lib/constants';
+import { SHOP_NAME, LOGO_URL } from '@/lib/constants';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -19,11 +19,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://meccacityboutique.c
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${SHOP_NAME} — Fashion & Lifestyle, Chuka`,
+    default: `${SHOP_NAME} - Fashion & Lifestyle, Chuka`,
     template: `%s | ${SHOP_NAME}`,
   },
   description:
-    'Mecca City Boutique in Ndagani, Chuka — dresses, skirts, ladies tops, jerseys, cocktail perfumes and fresheners. Order easily on WhatsApp.',
+    'Mecca City Boutique in Ndagani, Chuka - dresses, skirts, ladies tops, jerseys, cocktail perfumes and fresheners. Order easily on WhatsApp.',
   keywords: [
     'Mecca City Boutique',
     'Chuka boutique',
@@ -33,9 +33,9 @@ export const metadata = {
     'cocktail perfumes Kenya',
   ],
   openGraph: {
-    title: `${SHOP_NAME} — Fashion & Lifestyle, Chuka`,
+    title: `${SHOP_NAME} - Fashion & Lifestyle, Chuka`,
     description:
-      'Dresses, skirts, tops, jerseys, cocktail perfumes and fresheners — order on WhatsApp for fast delivery around Chuka.',
+      'Dresses, skirts, tops, jerseys, cocktail perfumes and fresheners - order on WhatsApp for fast delivery around Chuka.',
     url: siteUrl,
     siteName: SHOP_NAME,
     locale: 'en_KE',
@@ -43,10 +43,15 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SHOP_NAME} — Fashion & Lifestyle, Chuka`,
+    title: `${SHOP_NAME} - Fashion & Lifestyle, Chuka`,
     description: 'Dresses, skirts, tops, jerseys, cocktail perfumes and fresheners in Chuka, Kenya.',
   },
   robots: { index: true, follow: true },
+  icons: {
+    icon: LOGO_URL,
+    shortcut: LOGO_URL,
+    apple: LOGO_URL,
+  },
 };
 
 export default function RootLayout({ children }) {
