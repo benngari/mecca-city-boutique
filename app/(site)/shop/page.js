@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import { Suspense } from 'react';
 import { connectDB } from '@/lib/mongodb';
@@ -28,14 +28,14 @@ export default async function ShopPage({ searchParams }) {
     <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-emerald">Full Catalogue</p>
-        <h1 className="font-display text-3xl font-bold text-navy md:text-4xl">Shop All Products</h1>
+        <h1 className="font-display text-3xl font-bold text-navy dark:text-cream md:text-4xl">Shop All Products</h1>
       </div>
 
       <Suspense fallback={<div className="h-24" />}>
         <SearchFilterBar />
       </Suspense>
 
-      <ProductGrid products={products} emptyMessage="No products match your search — try another category." />
+      <ProductGrid products={products} emptyMessage="No products match your search â€” try another category." />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-cream text-charcoal font-body antialiased;
+  @apply bg-cream text-charcoal font-body antialiased transition-colors dark:bg-navy-900 dark:text-cream;
 }
 
 ::selection {

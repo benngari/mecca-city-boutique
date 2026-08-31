@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ export default function ProductOrderPanel({ productName, sizes, soldOut }) {
     <>
       {sizes?.length > 0 && (
         <div className="mt-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-navy-400">
+          <p className="text-xs font-semibold uppercase tracking-wide text-navy-400 dark:text-navy-300">
             {selectedSize ? `Size: ${selectedSize}` : 'Select a size'}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -23,8 +23,8 @@ export default function ProductOrderPanel({ productName, sizes, soldOut }) {
                 onClick={() => setSelectedSize(selectedSize === size ? null : size)}
                 className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors ${
                   selectedSize === size
-                    ? 'border-navy bg-navy text-cream'
-                    : 'border-navy-200 text-navy hover:border-navy'
+                    ? 'border-navy bg-navy text-cream dark:border-electric dark:bg-electric dark:text-navy-900'
+                    : 'border-navy-200 text-navy hover:border-navy dark:border-navy-600 dark:text-cream dark:hover:border-cream'
                 }`}
               >
                 {size}

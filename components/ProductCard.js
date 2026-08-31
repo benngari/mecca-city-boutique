@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import Image from 'next/image';
 import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
 
@@ -8,8 +8,8 @@ export default function ProductCard({ product }) {
   const waHref = buildWhatsAppLink(productWhatsAppMessage(product.name));
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-sm transition-shadow hover:shadow-lg">
-      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-navy-50">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-navy-700 dark:bg-navy-800">
+      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-navy-50 dark:bg-navy-700">
         {image ? (
           <Image
             src={image}
@@ -19,7 +19,7 @@ export default function ProductCard({ product }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-navy-300">No image</div>
+          <div className="flex h-full items-center justify-center text-navy-300 dark:text-navy-400">No image</div>
         )}
 
         {product.discountPrice && !soldOut && (
@@ -35,10 +35,10 @@ export default function ProductCard({ product }) {
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-electric-600">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-electric-600 dark:text-electric-400">
           {product.category?.replace('_', ' ')}
         </p>
-        <Link href={`/product/${product.slug}`} className="font-display text-lg font-semibold leading-snug text-navy hover:text-electric">
+        <Link href={`/product/${product.slug}`} className="font-display text-lg font-semibold leading-snug text-navy hover:text-electric dark:text-cream">
           {product.name}
         </Link>
 
@@ -46,28 +46,28 @@ export default function ProductCard({ product }) {
           {product.discountPrice ? (
             <>
               <span className="font-semibold text-emerald">KSh {product.discountPrice.toLocaleString()}</span>
-              <span className="text-sm text-navy-300 line-through">KSh {product.price.toLocaleString()}</span>
+              <span className="text-sm text-navy-300 line-through dark:text-navy-400">KSh {product.price.toLocaleString()}</span>
             </>
           ) : (
-            <span className="font-semibold text-navy">KSh {product.price.toLocaleString()}</span>
+            <span className="font-semibold text-navy dark:text-cream">KSh {product.price.toLocaleString()}</span>
           )}
         </div>
 
         <div className="mt-auto flex gap-2 pt-3">
           <Link
             href={`/product/${product.slug}`}
-            className="flex-1 rounded-full border border-navy px-3 py-2 text-center text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
+            className="flex-1 rounded-full border border-navy px-3 py-2 text-center text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream dark:border-cream dark:text-cream dark:hover:bg-cream dark:hover:text-navy"
           >
             View Details
           </Link>
-          <a
+          <Link
             href={waHref}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 rounded-full bg-emerald px-3 py-2 text-center text-xs font-semibold text-white transition-colors hover:bg-emerald/90"
           >
             Order on WhatsApp
-          </a>
+          </Link>
         </div>
       </div>
     </div>

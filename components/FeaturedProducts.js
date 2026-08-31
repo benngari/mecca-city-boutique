@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import ProductGrid from './ProductGrid';
 
 export default function FeaturedProducts({ products }) {
@@ -7,14 +7,14 @@ export default function FeaturedProducts({ products }) {
       <div className="mb-8 flex items-end justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-emerald">Handpicked</p>
-          <h2 className="font-display text-3xl font-bold text-navy">Featured Pieces</h2>
+          <h2 className="font-display text-3xl font-bold text-navy dark:text-cream">Featured Pieces</h2>
         </div>
-        <Link href="/shop" className="hidden text-sm font-semibold text-electric hover:text-navy sm:block">
+        <Link href="/shop" className="hidden text-sm font-semibold text-electric hover:text-navy dark:hover:text-cream sm:block">
           View all &rarr;
         </Link>
       </div>
 
-      <ProductGrid products={products} emptyMessage="Featured products coming soon — check back shortly." />
+      <ProductGrid products={products} emptyMessage="Featured products coming soon â€” check back shortly." />
     </section>
   );
 }

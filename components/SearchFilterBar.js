@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -32,7 +32,7 @@ export default function SearchFilterBar() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search dresses, jerseys, perfumes..."
-          className="w-full rounded-full border border-navy-200 bg-white px-5 py-3 text-sm focus:border-electric focus:outline-none"
+          className="w-full rounded-full border border-navy-200 bg-white px-5 py-3 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream dark:placeholder:text-navy-400"
         />
         <button
           type="submit"
@@ -46,7 +46,9 @@ export default function SearchFilterBar() {
         <button
           onClick={() => updateParams({ category: 'all' })}
           className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
-            activeCategory === 'all' ? 'bg-navy text-cream' : 'bg-navy-50 text-navy hover:bg-navy-100'
+            activeCategory === 'all'
+              ? 'bg-navy text-cream dark:bg-electric dark:text-navy-900'
+              : 'bg-navy-50 text-navy hover:bg-navy-100 dark:bg-navy-800 dark:text-navy-200 dark:hover:bg-navy-700'
           }`}
         >
           All
@@ -56,7 +58,9 @@ export default function SearchFilterBar() {
             key={cat.slug}
             onClick={() => updateParams({ category: cat.slug })}
             className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
-              activeCategory === cat.slug ? 'bg-navy text-cream' : 'bg-navy-50 text-navy hover:bg-navy-100'
+              activeCategory === cat.slug
+                ? 'bg-navy text-cream dark:bg-electric dark:text-navy-900'
+                : 'bg-navy-50 text-navy hover:bg-navy-100 dark:bg-navy-800 dark:text-navy-200 dark:hover:bg-navy-700'
             }`}
           >
             {cat.name}

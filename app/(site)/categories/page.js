@@ -14,8 +14,8 @@ export default async function CategoriesPage() {
   return (
     <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
       <p className="text-xs font-semibold uppercase tracking-widest text-emerald">Browse</p>
-      <h1 className="font-display text-3xl font-bold text-navy md:text-4xl">Shop by Category</h1>
-      <p className="mt-3 max-w-xl text-navy-500">
+      <h1 className="font-display text-3xl font-bold text-navy dark:text-cream md:text-4xl">Shop by Category</h1>
+      <p className="mt-3 max-w-xl text-navy-500 dark:text-navy-200">
         From wine dresses to cocktail perfumes - find exactly what you're looking for.
       </p>
 

@@ -1,9 +1,9 @@
-import ProductCard from './ProductCard';
+﻿import ProductCard from './ProductCard';
 
 export default function ProductGrid({ products, emptyMessage = 'No products found.' }) {
   if (!products || products.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-navy-200 py-16 text-center text-navy-400">
+      <div className="rounded-2xl border border-dashed border-navy-200 py-16 text-center text-navy-400 dark:border-navy-700 dark:text-navy-300">
         {emptyMessage}
       </div>
     );
