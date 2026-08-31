@@ -1,7 +1,7 @@
 ﻿import Link from 'next/link';
 import Image from 'next/image';
 import { buildWhatsAppLink, generalWhatsAppMessage } from '@/lib/whatsapp';
-import { HERO_IMAGES } from '@/lib/constants';
+import { HERO_IMAGE } from '@/lib/constants';
 
 export default function Hero() {
   const waHref = buildWhatsAppLink(generalWhatsAppMessage());
@@ -48,22 +48,10 @@ export default function Hero() {
         </div>
 
         <div className="relative animate-fadeUp [animation-delay:150ms]">
-          <div className="mx-auto grid max-w-sm grid-cols-2 gap-4">
-            <div className="relative col-span-2 h-40 overflow-hidden rounded-2xl border border-cream/10 bg-navy-800">
-              {HERO_IMAGES[0] && (
-                <Image src={HERO_IMAGES[0]} alt="Mecca City Boutique shop" fill sizes="400px" className="object-cover" />
-              )}
-            </div>
-            <div className="relative h-32 overflow-hidden rounded-2xl border border-cream/10 bg-navy-800">
-              {HERO_IMAGES[1] && (
-                <Image src={HERO_IMAGES[1]} alt="Mecca City Boutique shop" fill sizes="200px" className="object-cover" />
-              )}
-            </div>
-            <div className="relative h-32 overflow-hidden rounded-2xl border border-cream/10 bg-navy-800">
-              {HERO_IMAGES[2] && (
-                <Image src={HERO_IMAGES[2]} alt="Mecca City Boutique shop" fill sizes="200px" className="object-cover" />
-              )}
-            </div>
+          <div className="relative mx-auto h-80 max-w-sm overflow-hidden rounded-2xl border border-cream/10 bg-navy-800 sm:h-96">
+            {HERO_IMAGE && (
+              <Image src={HERO_IMAGE} alt="Mecca City Boutique shop" fill sizes="400px" className="object-cover" />
+            )}
           </div>
           <div className="mt-4 rounded-2xl border border-cream/10 bg-white/5 p-4 text-center backdrop-blur-sm">
             <p className="text-xs uppercase tracking-widest text-navy-200">Also stocking</p>
