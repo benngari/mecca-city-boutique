@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [sellingId, setSellingId] = useState(null);
+  const [busyId, setBusyId] = useState(null);
 
   async function loadProducts() {
     setLoading(true);
@@ -27,7 +27,7 @@ export default function AdminProductsPage() {
   }, []);
 
   async function handleDelete(id) {
-    if (!confirm('Delete this product? This cannot be undone.')) return;
+    if (!confirm('Move this product to Trash? You can restore it later.')) return;
     const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
     if (res.ok) {
       setProducts((prev) => prev.filter((p) => p._id !== id));
@@ -37,7 +37,7 @@ export default function AdminProductsPage() {
   }
 
   async function handleRecordSale(id) {
-    setSellingId(id);
+    setBusyId(id);
     try {
       const res = await fetch(`/api/products/${id}/sell`, {
         method: 'POST',
@@ -55,7 +55,34 @@ export default function AdminProductsPage() {
     } catch {
       alert('Something went wrong. Try again.');
     } finally {
-      setSellingId(null);
+      setBusyId(null);
+    }
+  }
+
+  async function handleAddStock(id) {
+    const input = prompt('How many units to add to stock?');
+    const quantity = Number(input);
+    if (!quantity || quantity <= 0) return;
+
+    setBusyId(id);
+    try {
+      const res = await fetch(`/api/products/${id}/restock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Could not add stock.');
+        return;
+      }
+
+      setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+    } catch {
+      alert('Something went wrong. Try again.');
+    } finally {
+      setBusyId(null);
     }
   }
 
@@ -63,8 +90,8 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-navy">Products</h1>
-          <p className="mt-1 text-sm text-navy-400">{products.length} product(s)</p>
+          <h1 className="font-display text-2xl font-bold text-navy dark:text-cream">Products</h1>
+          <p className="mt-1 text-sm text-navy-400 dark:text-navy-300">{products.length} product(s)</p>
         </div>
         <Link
           href="/admin/products/new"
@@ -86,17 +113,17 @@ export default function AdminProductsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name..."
-          className="w-full max-w-sm rounded-full border border-navy-200 bg-white px-4 py-2.5 text-sm focus:border-electric focus:outline-none"
+          className="w-full max-w-sm rounded-full border border-navy-200 bg-white px-4 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
         />
-        <button type="submit" className="rounded-full bg-navy-100 px-5 py-2.5 text-sm font-semibold text-navy">
+        <button type="submit" className="rounded-full bg-navy-100 px-5 py-2.5 text-sm font-semibold text-navy dark:bg-navy-800 dark:text-cream">
           Search
         </button>
       </form>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white">
-        <table className="w-full min-w-[720px] text-sm">
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white dark:border-navy-700 dark:bg-navy-800">
+        <table className="w-full min-w-[780px] text-sm">
           <thead>
-            <tr className="border-b border-navy-100 text-left text-xs uppercase tracking-wide text-navy-400">
+            <tr className="border-b border-navy-100 text-left text-xs uppercase tracking-wide text-navy-400 dark:border-navy-700 dark:text-navy-300">
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Price</th>
@@ -108,35 +135,35 @@ export default function AdminProductsPage() {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-navy-300">
+                <td colSpan={6} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
                   Loading...
                 </td>
               </tr>
             )}
             {!loading && products.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-navy-300">
+                <td colSpan={6} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
                   No products yet - add your first product.
                 </td>
               </tr>
             )}
             {products.map((p) => (
-              <tr key={p._id} className="border-b border-navy-50 last:border-0">
+              <tr key={p._id} className="border-b border-navy-50 last:border-0 dark:border-navy-700">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-navy-50">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-navy-50 dark:bg-navy-700">
                       {p.images?.[0]?.url && (
                         <Image src={p.images[0].url} alt={p.name} fill sizes="48px" className="object-cover" />
                       )}
                     </div>
                     <div>
-                      <p className="font-semibold text-navy">{p.name}</p>
-                      <p className="text-xs text-navy-400">SKU: {p.sku}</p>
+                      <p className="font-semibold text-navy dark:text-cream">{p.name}</p>
+                      <p className="text-xs text-navy-400 dark:text-navy-300">SKU: {p.sku}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 capitalize text-navy-500">{p.category}</td>
-                <td className="px-4 py-3 text-navy-500">KSh {p.price.toLocaleString()}</td>
+                <td className="px-4 py-3 capitalize text-navy-500 dark:text-navy-200">{p.category}</td>
+                <td className="px-4 py-3 text-navy-500 dark:text-navy-200">KSh {p.price.toLocaleString()}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -150,19 +177,26 @@ export default function AdminProductsPage() {
                     {p.stockStatus.replace('_', ' ')}
                   </span>
                   {p.stockQuantity != null && (
-                    <p className="mt-1 text-xs text-navy-400">{p.stockQuantity} left</p>
+                    <p className="mt-1 text-xs text-navy-400 dark:text-navy-300">{p.stockQuantity} left</p>
                   )}
                 </td>
-                <td className="px-4 py-3">{p.featured ? '★' : '-'}</td>
+                <td className="px-4 py-3">{p.featured ? 'â˜…' : '-'}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex flex-wrap justify-end gap-3">
+                    <button
+                      onClick={() => handleAddStock(p._id)}
+                      disabled={busyId === p._id}
+                      className="font-semibold text-electric disabled:opacity-50"
+                    >
+                      Add Stock
+                    </button>
                     {p.stockQuantity != null && p.stockQuantity > 0 && (
                       <button
                         onClick={() => handleRecordSale(p._id)}
-                        disabled={sellingId === p._id}
+                        disabled={busyId === p._id}
                         className="font-semibold text-emerald disabled:opacity-50"
                       >
-                        {sellingId === p._id ? 'Recording...' : 'Record Sale'}
+                        Record Sale
                       </button>
                     )}
                     <Link href={`/admin/products/${p._id}/edit`} className="font-semibold text-electric">

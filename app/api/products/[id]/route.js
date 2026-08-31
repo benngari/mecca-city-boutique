@@ -1,15 +1,18 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import slugify from 'slugify';
 import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import { getSession } from '@/lib/auth';
-import { deleteImage } from '@/lib/cloudinary';
+import { logAction } from '@/lib/audit';
 
 export async function GET(request, { params }) {
   await connectDB();
   const { id } = params;
 
-  const product = await Product.findOne({ $or: [{ _id: isValidId(id) ? id : null }, { slug: id }] }).lean();
+  const product = await Product.findOne({
+    $or: [{ _id: isValidId(id) ? id : null }, { slug: id }],
+    deletedAt: null,
+  }).lean();
 
   if (!product) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });
@@ -48,6 +51,13 @@ export async function PUT(request, { params }) {
       runValidators: true,
     });
 
+    await logAction({
+      actor: session.email,
+      action: 'product.update',
+      target: updated.name,
+      details: `SKU: ${updated.sku}`,
+    });
+
     return NextResponse.json({ product: updated });
   } catch (err) {
     console.error('Update product error:', err);
@@ -58,6 +68,7 @@ export async function PUT(request, { params }) {
   }
 }
 
+// DELETE = soft delete (moves to Trash). Use /permanent-delete to actually remove it.
 export async function DELETE(request, { params }) {
   const session = await getSession();
   if (!session) {
@@ -71,8 +82,15 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    await Promise.all((product.images || []).map((img) => deleteImage(img.publicId)));
-    await Product.findByIdAndDelete(params.id);
+    product.deletedAt = new Date();
+    await product.save();
+
+    await logAction({
+      actor: session.email,
+      action: 'product.soft_delete',
+      target: product.name,
+      details: `SKU: ${product.sku} - moved to Trash`,
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {

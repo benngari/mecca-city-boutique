@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 const ImageSchema = new mongoose.Schema(
   {
@@ -26,6 +26,7 @@ const ProductSchema = new mongoose.Schema(
     stockQuantity: { type: Number, min: 0, default: null },
     featured: { type: Boolean, default: false },
     sku: { type: String, required: true, unique: true, trim: true },
+    deletedAt: { type: Date, default: null, index: true },
   },
   { timestamps: true }
 );

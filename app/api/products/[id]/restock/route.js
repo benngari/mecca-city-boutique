@@ -4,8 +4,9 @@ import Product from '@/models/Product';
 import { getSession } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 
-// POST /api/products/[id]/sell  body: { quantity?: number }  (admin only)
-// Decrements stockQuantity by `quantity` (default 1) and auto-updates stockStatus.
+// POST /api/products/[id]/restock  body: { quantity: number }  (admin only)
+// Adds to stockQuantity and auto-updates stockStatus. If the product had no
+// quantity tracked yet, this starts tracking it from `quantity`.
 export async function POST(request, { params }) {
   const session = await getSession();
   if (!session) {
@@ -15,21 +16,18 @@ export async function POST(request, { params }) {
   try {
     await connectDB();
     const body = await request.json().catch(() => ({}));
-    const soldQuantity = Number(body.quantity) > 0 ? Number(body.quantity) : 1;
+    const addedQuantity = Number(body.quantity) > 0 ? Number(body.quantity) : 0;
+
+    if (!addedQuantity) {
+      return NextResponse.json({ error: 'Enter a quantity greater than 0' }, { status: 400 });
+    }
 
     const product = await Product.findById(params.id);
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    if (product.stockQuantity == null) {
-      return NextResponse.json(
-        { error: 'This product has no stock quantity set. Add one in Edit Product first.' },
-        { status: 400 }
-      );
-    }
-
-    const newQuantity = Math.max(0, product.stockQuantity - soldQuantity);
+    const newQuantity = (product.stockQuantity || 0) + addedQuantity;
     let stockStatus = 'in_stock';
     if (newQuantity === 0) stockStatus = 'sold_out';
     else if (newQuantity <= 3) stockStatus = 'low_stock';
@@ -40,14 +38,14 @@ export async function POST(request, { params }) {
 
     await logAction({
       actor: session.email,
-      action: 'stock.sell',
+      action: 'stock.restock',
       target: product.name,
-      details: `Sold ${soldQuantity}, ${newQuantity} remaining`,
+      details: `Added ${addedQuantity}, ${newQuantity} now in stock`,
     });
 
     return NextResponse.json({ product });
   } catch (err) {
-    console.error('Record sale error:', err);
+    console.error('Restock error:', err);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }

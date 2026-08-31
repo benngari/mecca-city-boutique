@@ -1,10 +1,12 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import slugify from 'slugify';
 import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import { getSession } from '@/lib/auth';
+import { logAction } from '@/lib/audit';
 
 // GET /api/products?search=&category=&featured=&stockStatus=&limit=&page=
+// Only returns non-deleted products. Use /api/products/trash for soft-deleted ones.
 export async function GET(request) {
   await connectDB();
   const { searchParams } = new URL(request.url);
@@ -16,7 +18,7 @@ export async function GET(request) {
   const limit = Math.min(parseInt(searchParams.get('limit') || '24', 10), 100);
   const page = Math.max(parseInt(searchParams.get('page') || '1', 10), 1);
 
-  const query = {};
+  const query = { deletedAt: null };
   if (search) query.$text = { $search: search };
   if (category && category !== 'all') query.category = category;
   if (featured === 'true') query.featured = true;
@@ -69,8 +71,16 @@ export async function POST(request) {
       images: body.images || [],
       sizes: body.sizes || [],
       stockStatus: body.stockStatus || 'in_stock',
+      stockQuantity: body.stockQuantity ?? null,
       featured: !!body.featured,
       sku: body.sku,
+    });
+
+    await logAction({
+      actor: session.email,
+      action: 'product.create',
+      target: product.name,
+      details: `SKU: ${product.sku}`,
     });
 
     return NextResponse.json({ product }, { status: 201 });

@@ -7,6 +7,10 @@ const LINKS = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/products/new', label: 'Add Product' },
+  { href: '/admin/reports', label: 'Reports' },
+  { href: '/admin/trash', label: 'Trash' },
+  { href: '/admin/audit-log', label: 'Audit Log' },
+  { href: '/admin/users', label: 'Users' },
 ];
 
 export default function AdminSidebar() {
@@ -14,6 +18,7 @@ export default function AdminSidebar() {
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
+    // Hard navigation so the cleared session cookie is guaranteed to be picked up
     window.location.href = '/admin/login?loggedout=true';
   }
 

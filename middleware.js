@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const SESSION_COOKIE = 'mcb_admin_session';
+const PUBLIC_ADMIN_PATHS = ['/admin/login', '/admin/signup'];
 
 async function isValidSession(token) {
   try {
@@ -15,12 +16,15 @@ async function isValidSession(token) {
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  const isAdminRoute = pathname.startsWith('/admin') && pathname !== '/admin/login';
+  const isAdminRoute = pathname.startsWith('/admin') && !PUBLIC_ADMIN_PATHS.includes(pathname);
   const isAdminApi =
-    pathname.startsWith('/api/products') && ['POST', 'PUT', 'DELETE'].includes(request.method);
+    pathname.startsWith('/api/products') &&
+    (['POST', 'PUT', 'DELETE'].includes(request.method) || pathname.endsWith('/trash'));
   const isUploadApi = pathname.startsWith('/api/upload');
+  const isUsersApi = pathname.startsWith('/api/users');
+  const isAuditApi = pathname.startsWith('/api/audit-log');
 
-  if (!isAdminRoute && !isAdminApi && !isUploadApi) {
+  if (!isAdminRoute && !isAdminApi && !isUploadApi && !isUsersApi && !isAuditApi) {
     return NextResponse.next();
   }
 
@@ -40,5 +44,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/products/:path*', '/api/upload/:path*'],
+  matcher: ['/admin/:path*', '/api/products/:path*', '/api/upload/:path*', '/api/users/:path*', '/api/audit-log/:path*'],
 };
