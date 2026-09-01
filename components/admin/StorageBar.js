@@ -12,9 +12,12 @@ const SEGMENT_COLORS = [
   '#64748B', // slate
 ];
 
-// A phone-storage-style segmented bar: each category gets a share of the bar
-// proportional to its stock units (or value), with a colour-coded legend below.
-export default function StorageBar({ categories, metric = 'units', valueFormatter }) {
+function formatMetric(value, metric) {
+  if (metric === 'value') return `KSh ${value.toLocaleString()}`;
+  return value.toLocaleString();
+}
+
+export default function StorageBar({ categories, metric = 'units' }) {
   const total = categories.reduce((sum, c) => sum + (c[metric] || 0), 0);
   const withData = categories.filter((c) => (c[metric] || 0) > 0);
 
@@ -47,7 +50,7 @@ export default function StorageBar({ categories, metric = 'units', valueFormatte
             />
             <span className="truncate text-navy-500 dark:text-navy-200">{c.name}</span>
             <span className="ml-auto shrink-0 font-semibold text-navy dark:text-cream">
-              {valueFormatter ? valueFormatter(c[metric]) : c[metric]}
+              {formatMetric(c[metric], metric)}
             </span>
           </div>
         ))}

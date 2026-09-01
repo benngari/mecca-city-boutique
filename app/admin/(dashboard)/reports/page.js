@@ -28,11 +28,7 @@ export default async function ReportsPage() {
 
       <div className="mt-6 rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
         <p className="mb-4 text-sm font-semibold text-navy dark:text-cream">Stock Value by Category</p>
-        <StorageBar
-          categories={inventory.categories}
-          metric="value"
-          valueFormatter={(v) => `KSh ${v.toLocaleString()}`}
-        />
+                <StorageBar categories={inventory.categories} metric="value" />
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white dark:border-navy-700 dark:bg-navy-800">
