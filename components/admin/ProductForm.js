@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -45,6 +45,7 @@ export default function ProductForm({ initialProduct, productId }) {
     e.preventDefault();
     const value = customSizeInput.trim();
     if (!value) return;
+    // supports comma-separated entry, e.g. "30, 31, 32"
     const parts = value.split(',').map((s) => s.trim()).filter(Boolean);
     setForm((prev) => ({
       ...prev,

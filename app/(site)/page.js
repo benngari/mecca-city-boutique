@@ -46,7 +46,7 @@ export default async function HomePage() {
               New wine dresses just landed
             </h2>
             <p className="mt-4 max-w-md text-navy-200">
-              Every piece is picked for how it actually moves and photographs â€” not just how it
+              Every piece is picked for how it actually moves and photographs - not just how it
               hangs on the rack. Limited stock, no restocks on some styles.
             </p>
             <Link
@@ -74,7 +74,7 @@ export default async function HomePage() {
             <p className="mt-4 text-navy-500 dark:text-navy-200">
               Based in Ndagani, Chuka, Mecca City Boutique has been dressing the town in dresses,
               skirts, tops, jerseys and cocktail scents that don't feel mass-produced. We stock
-              what we'd actually wear â€” and we're one WhatsApp message away when you need it fast.
+              what we'd actually wear - and we're one WhatsApp message away when you need it fast.
             </p>
             <Link href="/about" className="mt-4 inline-block text-sm font-semibold text-electric hover:text-navy dark:hover:text-cream">
               Read our full story &rarr;

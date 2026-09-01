@@ -14,7 +14,7 @@ export default function FeaturedProducts({ products }) {
         </Link>
       </div>
 
-      <ProductGrid products={products} emptyMessage="Featured products coming soon â€” check back shortly." />
+      <ProductGrid products={products} emptyMessage="Featured products coming soon - check back shortly." />
     </section>
   );
 }

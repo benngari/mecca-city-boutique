@@ -35,7 +35,7 @@ export default async function ShopPage({ searchParams }) {
         <SearchFilterBar />
       </Suspense>
 
-      <ProductGrid products={products} emptyMessage="No products match your search â€” try another category." />
+      <ProductGrid products={products} emptyMessage="No products match your search - try another category." />
     </div>
   );
 }
