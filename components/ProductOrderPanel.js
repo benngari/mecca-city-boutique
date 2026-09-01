@@ -4,9 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
 
-export default function ProductOrderPanel({ productName, sizes, soldOut }) {
+export default function ProductOrderPanel({ productName, sizes, soldOut, sku, imageUrl }) {
   const [selectedSize, setSelectedSize] = useState(null);
-  const waHref = buildWhatsAppLink(productWhatsAppMessage(productName, selectedSize));
+  const waHref = buildWhatsAppLink(
+    productWhatsAppMessage(productName, { size: selectedSize, sku, imageUrl })
+  );
 
   return (
     <>

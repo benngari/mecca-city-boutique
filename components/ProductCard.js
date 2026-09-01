@@ -5,7 +5,9 @@ import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
 export default function ProductCard({ product }) {
   const image = product.images?.[0]?.url;
   const soldOut = product.stockStatus === 'sold_out';
-  const waHref = buildWhatsAppLink(productWhatsAppMessage(product.name));
+  const waHref = buildWhatsAppLink(
+    productWhatsAppMessage(product.name, { sku: product.sku, imageUrl: product.images?.[0]?.url })
+  );
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-navy-700 dark:bg-navy-800">

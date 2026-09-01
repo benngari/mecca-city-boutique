@@ -102,7 +102,13 @@ export default async function ProductPage({ params }) {
 
           <p className="whitespace-pre-line text-navy-500 dark:text-navy-200">{product.description}</p>
 
-          <ProductOrderPanel productName={product.name} sizes={product.sizes || []} soldOut={soldOut} />
+          <ProductOrderPanel
+            productName={product.name}
+            sizes={product.sizes || []}
+            soldOut={soldOut}
+            sku={product.sku}
+            imageUrl={product.images?.[0]?.url}
+          />
 
           <p className="mt-3 text-xs text-navy-400 dark:text-navy-400">SKU: {product.sku}</p>
         </div>

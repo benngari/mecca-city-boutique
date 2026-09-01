@@ -9,6 +9,7 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [busyId, setBusyId] = useState(null);
+  const [quantities, setQuantities] = useState({});
 
   async function loadProducts() {
     setLoading(true);
@@ -26,6 +27,11 @@ export default function AdminProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function getQuantity(id) {
+    const value = Number(quantities[id]);
+    return value > 0 ? value : 1;
+  }
+
   async function handleDelete(id) {
     if (!confirm('Move this product to Trash? You can restore it later.')) return;
     const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
@@ -37,12 +43,13 @@ export default function AdminProductsPage() {
   }
 
   async function handleRecordSale(id) {
+    const quantity = getQuantity(id);
     setBusyId(id);
     try {
       const res = await fetch(`/api/products/${id}/sell`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: 1 }),
+        body: JSON.stringify({ quantity }),
       });
       const data = await res.json();
 
@@ -52,6 +59,7 @@ export default function AdminProductsPage() {
       }
 
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+      setQuantities((prev) => ({ ...prev, [id]: '1' }));
     } catch {
       alert('Something went wrong. Try again.');
     } finally {
@@ -60,10 +68,7 @@ export default function AdminProductsPage() {
   }
 
   async function handleAddStock(id) {
-    const input = prompt('How many units to add to stock?');
-    const quantity = Number(input);
-    if (!quantity || quantity <= 0) return;
-
+    const quantity = getQuantity(id);
     setBusyId(id);
     try {
       const res = await fetch(`/api/products/${id}/restock`, {
@@ -79,6 +84,7 @@ export default function AdminProductsPage() {
       }
 
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+      setQuantities((prev) => ({ ...prev, [id]: '1' }));
     } catch {
       alert('Something went wrong. Try again.');
     } finally {
@@ -121,7 +127,7 @@ export default function AdminProductsPage() {
       </form>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white dark:border-navy-700 dark:bg-navy-800">
-        <table className="w-full min-w-[780px] text-sm">
+        <table className="w-full min-w-[860px] text-sm">
           <thead>
             <tr className="border-b border-navy-100 text-left text-xs uppercase tracking-wide text-navy-400 dark:border-navy-700 dark:text-navy-300">
               <th className="px-4 py-3">Product</th>
@@ -129,20 +135,21 @@ export default function AdminProductsPage() {
               <th className="px-4 py-3">Price</th>
               <th className="px-4 py-3">Stock</th>
               <th className="px-4 py-3">Featured</th>
+              <th className="px-4 py-3">Quantity</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
                   Loading...
                 </td>
               </tr>
             )}
             {!loading && products.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
                   No products yet - add your first product.
                 </td>
               </tr>
@@ -181,6 +188,15 @@ export default function AdminProductsPage() {
                   )}
                 </td>
                 <td className="px-4 py-3">{p.featured ? 'â˜…' : '-'}</td>
+                <td className="px-4 py-3">
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantities[p._id] ?? '1'}
+                    onChange={(e) => setQuantities((prev) => ({ ...prev, [p._id]: e.target.value }))}
+                    className="w-16 rounded-lg border border-navy-200 px-2 py-1.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
+                  />
+                </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex flex-wrap justify-end gap-3">
                     <button
@@ -188,17 +204,15 @@ export default function AdminProductsPage() {
                       disabled={busyId === p._id}
                       className="font-semibold text-electric disabled:opacity-50"
                     >
-                      Add Stock
+                      Add
                     </button>
-                    {p.stockQuantity != null && p.stockQuantity > 0 && (
-                      <button
-                        onClick={() => handleRecordSale(p._id)}
-                        disabled={busyId === p._id}
-                        className="font-semibold text-emerald disabled:opacity-50"
-                      >
-                        Record Sale
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleRecordSale(p._id)}
+                      disabled={busyId === p._id}
+                      className="font-semibold text-emerald disabled:opacity-50"
+                    >
+                      Sell
+                    </button>
                     <Link href={`/admin/products/${p._id}/edit`} className="font-semibold text-electric">
                       Edit
                     </Link>
