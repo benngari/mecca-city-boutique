@@ -38,9 +38,9 @@ module.exports = {
         cream: '#FBF9F5',
         charcoal: '#171717',
       },
-      fontFamily: {
-        display: ['var(--font-playfair)', 'serif'],
-        body: ['var(--font-manrope)', 'sans-serif'],
+            fontFamily: {
+        display: ['var(--font-poppins)', 'sans-serif'],
+        body: ['var(--font-poppins)', 'sans-serif'],
       },
       backgroundImage: {
         'stitch': "repeating-linear-gradient(90deg, currentColor 0, currentColor 6px, transparent 6px, transparent 12px)",

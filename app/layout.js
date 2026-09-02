@@ -1,16 +1,11 @@
-﻿import { Playfair_Display, Manrope } from 'next/font/google';
+﻿import { Poppins } from 'next/font/google';
 import './globals.css';
 import { SHOP_NAME, LOGO_URL } from '@/lib/constants';
 
-const playfair = Playfair_Display({
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-});
-
-const manrope = Manrope({
-  subsets: ['latin'],
-  variable: '--font-manrope',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-poppins',
   display: 'swap',
 });
 
@@ -56,7 +51,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${manrope.variable}`} suppressHydrationWarning>
+        <html lang="en" className={poppins.variable} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
