@@ -38,8 +38,16 @@ export default async function HomePage() {
 
       <FeaturedProducts products={featured} />
 
-      <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-        <div className="grid gap-10 rounded-3xl border border-navy-100 bg-white p-8 dark:border-navy-700 dark:bg-navy-800 md:grid-cols-2 md:p-14">
+      <section className="relative mx-auto max-w-7xl overflow-hidden px-5 py-16 md:px-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-16 top-0 h-72 w-72 rounded-full bg-electric/10 blur-3xl dark:bg-electric/15"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-emerald/10 blur-3xl dark:bg-emerald/15"
+        />
+        <div className="relative grid gap-10 rounded-3xl border border-navy-100 bg-gradient-to-br from-white to-navy-50 p-8 shadow-xl shadow-navy-900/5 dark:border-navy-700 dark:from-navy-800 dark:to-navy-900 dark:shadow-black/20 md:grid-cols-2 md:p-14">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-emerald">Our story</p>
             <h2 className="mt-2 font-display text-3xl font-bold text-navy dark:text-cream">About Mecca City Boutique</h2>
@@ -53,7 +61,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="rounded-2xl bg-navy-50 p-6 dark:bg-navy-900/60">
+          <div className="rounded-2xl border border-navy-100 bg-white/70 p-6 backdrop-blur-sm dark:border-navy-700 dark:bg-navy-900/60">
             <p className="text-xs font-semibold uppercase tracking-widest text-electric-600 dark:text-electric-400">Visit / Order</p>
             <p className="mt-3 font-display text-lg font-semibold text-navy dark:text-cream">{SHOP_LOCATION}</p>
             <ul className="mt-3 space-y-1 text-sm text-navy-500 dark:text-navy-200">
