@@ -1,7 +1,6 @@
 ﻿export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Hero from '@/components/Hero';
@@ -17,21 +16,8 @@ async function getFeatured() {
   return JSON.parse(JSON.stringify(products));
 }
 
-async function getDressPhotos() {
-  await connectDB();
-  const dresses = await Product.find({ category: 'dresses', deletedAt: null })
-    .sort({ createdAt: -1 })
-    .limit(4)
-    .lean();
-  return dresses.map((p) => p.images?.[0]?.url).filter(Boolean);
-}
-
 export default async function HomePage() {
-  const [featured, categories, dressPhotos] = await Promise.all([
-    getFeatured(),
-    getCategoriesWithPreview(),
-    getDressPhotos(),
-  ]);
+  const [featured, categories] = await Promise.all([getFeatured(), getCategoriesWithPreview()]);
   const waHref = buildWhatsAppLink(generalWhatsAppMessage());
 
   return (
@@ -51,84 +37,6 @@ export default async function HomePage() {
       </section>
 
       <FeaturedProducts products={featured} />
-
-      <section className="bg-navy-900">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 md:grid-cols-2 md:px-8 md:py-20">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-gold">Fresh drop</p>
-            <h2 className="mt-2 font-display text-3xl font-bold text-cream">
-              New wine dresses just landed
-            </h2>
-            <p className="mt-4 max-w-md text-navy-200">
-              Every piece is picked for how it actually moves and photographs - not just how it
-              hangs on the rack. Limited stock, no restocks on some styles.
-            </p>
-            <Link
-              href="/shop?category=dresses"
-              className="mt-6 inline-block rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy-900 hover:bg-gold/90"
-            >
-              Shop Wine Dresses
-            </Link>
-          </div>
-          <div className="tag-divider self-center text-cream/10 md:hidden" />
-
-          {dressPhotos.length === 0 && (
-            <div className="flex h-56 items-center justify-center rounded-2xl border border-cream/10 bg-cream/5 text-center text-sm text-navy-200">
-              New dress photos coming soon
-            </div>
-          )}
-
-          {dressPhotos.length === 1 && (
-            <div className="relative h-64 overflow-hidden rounded-2xl bg-electric/20">
-              <Image src={dressPhotos[0]} alt="Dress" fill sizes="500px" className="object-cover" />
-            </div>
-          )}
-
-          {dressPhotos.length === 2 && (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="relative h-56 overflow-hidden rounded-2xl bg-electric/20">
-                <Image src={dressPhotos[0]} alt="Dress" fill sizes="250px" className="object-cover" />
-              </div>
-              <div className="relative h-56 overflow-hidden rounded-2xl bg-emerald/20">
-                <Image src={dressPhotos[1]} alt="Dress" fill sizes="250px" className="object-cover" />
-              </div>
-            </div>
-          )}
-
-          {dressPhotos.length === 3 && (
-            <div className="grid grid-cols-3 gap-3">
-              <div className="relative col-span-2 h-56 overflow-hidden rounded-2xl bg-electric/20">
-                <Image src={dressPhotos[0]} alt="Dress" fill sizes="300px" className="object-cover" />
-              </div>
-              <div className="grid gap-3">
-                <div className="relative h-[6.75rem] overflow-hidden rounded-2xl bg-emerald/20">
-                  <Image src={dressPhotos[1]} alt="Dress" fill sizes="150px" className="object-cover" />
-                </div>
-                <div className="relative h-[6.75rem] overflow-hidden rounded-2xl bg-gold/20">
-                  <Image src={dressPhotos[2]} alt="Dress" fill sizes="150px" className="object-cover" />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {dressPhotos.length >= 4 && (
-            <div className="grid grid-cols-3 gap-3">
-              <div className="relative col-span-2 h-40 overflow-hidden rounded-2xl bg-electric/20">
-                <Image src={dressPhotos[0]} alt="Dress" fill sizes="300px" className="object-cover" />
-              </div>
-              <div className="relative h-40 overflow-hidden rounded-2xl bg-emerald/20">
-                <Image src={dressPhotos[1]} alt="Dress" fill sizes="150px" className="object-cover" />
-              </div>
-              <div className="relative h-28 overflow-hidden rounded-2xl bg-gold/20">
-                <Image src={dressPhotos[2]} alt="Dress" fill sizes="150px" className="object-cover" />
-              </div>
-              <div className="relative col-span-2 h-28 overflow-hidden rounded-2xl bg-cream/10">
-                <Image src={dressPhotos[3]} alt="Dress" fill sizes="300px" className="object-cover" />
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
 
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
         <div className="grid gap-10 rounded-3xl border border-navy-100 bg-white p-8 dark:border-navy-700 dark:bg-navy-800 md:grid-cols-2 md:p-14">
