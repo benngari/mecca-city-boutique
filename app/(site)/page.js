@@ -71,28 +71,62 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="tag-divider self-center text-cream/10 md:hidden" />
-          <div className="grid grid-cols-3 gap-3">
-            <div className="relative col-span-2 h-40 overflow-hidden rounded-2xl bg-electric/20">
-              {dressPhotos[0] && (
+
+          {dressPhotos.length === 0 && (
+            <div className="flex h-56 items-center justify-center rounded-2xl border border-cream/10 bg-cream/5 text-center text-sm text-navy-200">
+              New dress photos coming soon
+            </div>
+          )}
+
+          {dressPhotos.length === 1 && (
+            <div className="relative h-64 overflow-hidden rounded-2xl bg-electric/20">
+              <Image src={dressPhotos[0]} alt="Dress" fill sizes="500px" className="object-cover" />
+            </div>
+          )}
+
+          {dressPhotos.length === 2 && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="relative h-56 overflow-hidden rounded-2xl bg-electric/20">
+                <Image src={dressPhotos[0]} alt="Dress" fill sizes="250px" className="object-cover" />
+              </div>
+              <div className="relative h-56 overflow-hidden rounded-2xl bg-emerald/20">
+                <Image src={dressPhotos[1]} alt="Dress" fill sizes="250px" className="object-cover" />
+              </div>
+            </div>
+          )}
+
+          {dressPhotos.length === 3 && (
+            <div className="grid grid-cols-3 gap-3">
+              <div className="relative col-span-2 h-56 overflow-hidden rounded-2xl bg-electric/20">
                 <Image src={dressPhotos[0]} alt="Dress" fill sizes="300px" className="object-cover" />
-              )}
+              </div>
+              <div className="grid gap-3">
+                <div className="relative h-[6.75rem] overflow-hidden rounded-2xl bg-emerald/20">
+                  <Image src={dressPhotos[1]} alt="Dress" fill sizes="150px" className="object-cover" />
+                </div>
+                <div className="relative h-[6.75rem] overflow-hidden rounded-2xl bg-gold/20">
+                  <Image src={dressPhotos[2]} alt="Dress" fill sizes="150px" className="object-cover" />
+                </div>
+              </div>
             </div>
-            <div className="relative h-40 overflow-hidden rounded-2xl bg-emerald/20">
-              {dressPhotos[1] && (
+          )}
+
+          {dressPhotos.length >= 4 && (
+            <div className="grid grid-cols-3 gap-3">
+              <div className="relative col-span-2 h-40 overflow-hidden rounded-2xl bg-electric/20">
+                <Image src={dressPhotos[0]} alt="Dress" fill sizes="300px" className="object-cover" />
+              </div>
+              <div className="relative h-40 overflow-hidden rounded-2xl bg-emerald/20">
                 <Image src={dressPhotos[1]} alt="Dress" fill sizes="150px" className="object-cover" />
-              )}
-            </div>
-            <div className="relative h-28 overflow-hidden rounded-2xl bg-gold/20">
-              {dressPhotos[2] && (
+              </div>
+              <div className="relative h-28 overflow-hidden rounded-2xl bg-gold/20">
                 <Image src={dressPhotos[2]} alt="Dress" fill sizes="150px" className="object-cover" />
-              )}
-            </div>
-            <div className="relative col-span-2 h-28 overflow-hidden rounded-2xl bg-cream/10">
-              {dressPhotos[3] && (
+              </div>
+              <div className="relative col-span-2 h-28 overflow-hidden rounded-2xl bg-cream/10">
                 <Image src={dressPhotos[3]} alt="Dress" fill sizes="300px" className="object-cover" />
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
