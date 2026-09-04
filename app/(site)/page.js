@@ -1,6 +1,7 @@
 ﻿export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Hero from '@/components/Hero';
@@ -16,8 +17,21 @@ async function getFeatured() {
   return JSON.parse(JSON.stringify(products));
 }
 
+async function getDressPhotos() {
+  await connectDB();
+  const dresses = await Product.find({ category: 'dresses', deletedAt: null })
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .lean();
+  return dresses.map((p) => p.images?.[0]?.url).filter(Boolean);
+}
+
 export default async function HomePage() {
-  const [featured, categories] = await Promise.all([getFeatured(), getCategoriesWithPreview()]);
+  const [featured, categories, dressPhotos] = await Promise.all([
+    getFeatured(),
+    getCategoriesWithPreview(),
+    getDressPhotos(),
+  ]);
   const waHref = buildWhatsAppLink(generalWhatsAppMessage());
 
   return (
@@ -58,10 +72,26 @@ export default async function HomePage() {
           </div>
           <div className="tag-divider self-center text-cream/10 md:hidden" />
           <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2 h-40 rounded-2xl bg-electric/20" />
-            <div className="h-40 rounded-2xl bg-emerald/20" />
-            <div className="h-28 rounded-2xl bg-gold/20" />
-            <div className="col-span-2 h-28 rounded-2xl bg-cream/10" />
+            <div className="relative col-span-2 h-40 overflow-hidden rounded-2xl bg-electric/20">
+              {dressPhotos[0] && (
+                <Image src={dressPhotos[0]} alt="Dress" fill sizes="300px" className="object-cover" />
+              )}
+            </div>
+            <div className="relative h-40 overflow-hidden rounded-2xl bg-emerald/20">
+              {dressPhotos[1] && (
+                <Image src={dressPhotos[1]} alt="Dress" fill sizes="150px" className="object-cover" />
+              )}
+            </div>
+            <div className="relative h-28 overflow-hidden rounded-2xl bg-gold/20">
+              {dressPhotos[2] && (
+                <Image src={dressPhotos[2]} alt="Dress" fill sizes="150px" className="object-cover" />
+              )}
+            </div>
+            <div className="relative col-span-2 h-28 overflow-hidden rounded-2xl bg-cream/10">
+              {dressPhotos[3] && (
+                <Image src={dressPhotos[3]} alt="Dress" fill sizes="300px" className="object-cover" />
+              )}
+            </div>
           </div>
         </div>
       </section>
