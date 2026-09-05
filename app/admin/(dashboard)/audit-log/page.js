@@ -1,23 +1,36 @@
-﻿export const dynamic = 'force-dynamic';
+﻿@'
+export const dynamic = 'force-dynamic';
 
+import Link from 'next/link';
 import { connectDB } from '@/lib/mongodb';
 import AuditLog from '@/models/AuditLog';
 import { formatDateTimeEAT } from '@/lib/formatDate';
 
-async function getEntries() {
+const PAGE_SIZE = 15;
+
+async function getEntries(page) {
   await connectDB();
-  const entries = await AuditLog.find({}).sort({ createdAt: -1 }).limit(200).lean();
-  return JSON.parse(JSON.stringify(entries));
+  const [entries, total] = await Promise.all([
+    AuditLog.find({})
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * PAGE_SIZE)
+      .limit(PAGE_SIZE)
+      .lean(),
+    AuditLog.countDocuments({}),
+  ]);
+  return { entries: JSON.parse(JSON.stringify(entries)), total };
 }
 
-export default async function AuditLogPage() {
-  const entries = await getEntries();
+export default async function AuditLogPage({ searchParams }) {
+  const page = Math.max(parseInt(searchParams?.page || '1', 10), 1);
+  const { entries, total } = await getEntries(page);
+  const totalPages = Math.max(Math.ceil(total / PAGE_SIZE), 1);
 
   return (
     <div>
       <h1 className="font-display text-2xl font-bold text-navy dark:text-cream">Audit Log</h1>
       <p className="mt-1 text-sm text-navy-400 dark:text-navy-300">
-        Every admin action, most recent first (last 200 entries).
+        Every admin action, most recent first. Page {page} of {totalPages} ({total} total).
       </p>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white dark:border-navy-700 dark:bg-navy-800">
@@ -57,6 +70,29 @@ export default async function AuditLogPage() {
           </tbody>
         </table>
       </div>
+
+      <div className="mt-4 flex items-center justify-between">
+        {page > 1 ? (
+          <Link
+            href={`/admin/audit-log?page=${page - 1}`}
+            className="rounded-full border border-navy-200 px-5 py-2 text-sm font-semibold text-navy hover:bg-navy-50 dark:border-navy-600 dark:text-cream dark:hover:bg-navy-800"
+          >
+            Previous
+          </Link>
+        ) : (
+          <span />
+        )}
+
+        {page < totalPages && (
+          <Link
+            href={`/admin/audit-log?page=${page + 1}`}
+            className="rounded-full bg-navy px-5 py-2 text-sm font-semibold text-cream hover:bg-electric dark:bg-electric dark:text-navy-900"
+          >
+            Next
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
+'@ | Set-Content -Encoding UTF8 "app\admin\(dashboard)\audit-log\page.js"
