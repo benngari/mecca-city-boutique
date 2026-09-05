@@ -1,5 +1,4 @@
-﻿@'
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { connectDB } from '@/lib/mongodb';
@@ -95,4 +94,3 @@ export default async function AuditLogPage({ searchParams }) {
     </div>
   );
 }
-'@ | Set-Content -Encoding UTF8 "app\admin\(dashboard)\audit-log\page.js"
