@@ -2,6 +2,7 @@
 
 import { connectDB } from '@/lib/mongodb';
 import AuditLog from '@/models/AuditLog';
+import { formatDateTimeEAT } from '@/lib/formatDate';
 
 async function getEntries() {
   await connectDB();
@@ -41,7 +42,7 @@ export default async function AuditLogPage() {
             {entries.map((entry) => (
               <tr key={entry._id} className="border-b border-navy-50 last:border-0 dark:border-navy-700">
                 <td className="whitespace-nowrap px-4 py-3 text-navy-500 dark:text-navy-200">
-                  {new Date(entry.createdAt).toLocaleString()}
+                  {formatDateTimeEAT(entry.createdAt)}
                 </td>
                 <td className="px-4 py-3 text-navy dark:text-cream">{entry.actor}</td>
                 <td className="px-4 py-3">
