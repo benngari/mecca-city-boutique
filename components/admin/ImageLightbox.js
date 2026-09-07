@@ -14,7 +14,7 @@ export default function ImageLightbox({ src, alt, children }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`View ${alt} full screen`}
-        className="block h-full w-full cursor-zoom-in"
+        className="block shrink-0 cursor-zoom-in"
       >
         {children}
       </button>
