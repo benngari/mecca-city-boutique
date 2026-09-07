@@ -3,6 +3,7 @@
 import { useEffect, useState, Fragment } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ImageLightbox from '@/components/admin/ImageLightbox';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -106,7 +107,7 @@ export default function AdminProductsPage() {
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name..."
+          placeholder="Search by name or SKU..."
           className="w-full max-w-sm rounded-full border border-navy-200 bg-white px-4 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
         />
         <button type="submit" className="rounded-full bg-navy-100 px-5 py-2.5 text-sm font-semibold text-navy dark:bg-navy-800 dark:text-cream">
@@ -146,11 +147,13 @@ export default function AdminProductsPage() {
                 <tr className="border-b border-navy-50 last:border-0 dark:border-navy-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-navy-50 dark:bg-navy-700">
-                        {p.images?.[0]?.url && (
-                          <Image src={p.images[0].url} alt={p.name} fill sizes="48px" className="object-cover" />
-                        )}
-                      </div>
+                                            <ImageLightbox src={p.images?.[0]?.url} alt={p.name}>
+                        <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-navy-50 dark:bg-navy-700">
+                          {p.images?.[0]?.url && (
+                            <Image src={p.images[0].url} alt={p.name} fill sizes="48px" className="object-cover" />
+                          )}
+                        </div>
+                      </ImageLightbox>
                       <div>
                         <p className="font-semibold text-navy dark:text-cream">{p.name}</p>
                         <p className="text-xs text-navy-400 dark:text-navy-300">SKU: {p.sku}</p>

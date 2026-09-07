@@ -18,8 +18,13 @@ export async function GET(request) {
   const limit = Math.min(parseInt(searchParams.get('limit') || '24', 10), 100);
   const page = Math.max(parseInt(searchParams.get('page') || '1', 10), 1);
 
-  const query = { deletedAt: null };
-  if (search) query.$text = { $search: search };
+    const query = { deletedAt: null };
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { sku: { $regex: search, $options: 'i' } },
+    ];
+  }
   if (category && category !== 'all') query.category = category;
   if (featured === 'true') query.featured = true;
   if (stockStatus) query.stockStatus = stockStatus;
