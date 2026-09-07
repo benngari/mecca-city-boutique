@@ -3,22 +3,19 @@
 import Link from 'next/link';
 import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
-import AuditLog from '@/models/AuditLog';
 import StatsCard from '@/components/admin/StatsCard';
 import StorageBar from '@/components/admin/StorageBar';
 import { getInventorySummary } from '@/lib/inventory';
-import { CATEGORIES } from '@/lib/constants';
 
 async function getStats() {
   await connectDB();
 
-  const [total, available, soldOut, trashCount, recentProducts, recentActivity, inventory] = await Promise.all([
+  const [total, available, soldOut, trashCount, recentProducts, inventory] = await Promise.all([
     Product.countDocuments({ deletedAt: null }),
     Product.countDocuments({ deletedAt: null, stockStatus: { $ne: 'sold_out' } }),
     Product.countDocuments({ deletedAt: null, stockStatus: 'sold_out' }),
     Product.countDocuments({ deletedAt: { $ne: null } }),
     Product.find({ deletedAt: null }).sort({ createdAt: -1 }).limit(5).lean(),
-    AuditLog.find({}).sort({ createdAt: -1 }).limit(6).lean(),
     getInventorySummary(),
   ]);
 
@@ -28,7 +25,6 @@ async function getStats() {
     soldOut,
     trashCount,
     recentProducts: JSON.parse(JSON.stringify(recentProducts)),
-    recentActivity: JSON.parse(JSON.stringify(recentActivity)),
     inventory,
   };
 }
@@ -62,52 +58,24 @@ export default async function AdminDashboardPage() {
         <StorageBar categories={stats.inventory.categories} metric="units" />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-navy dark:text-cream">Recent Products</p>
-            <Link href="/admin/products" className="text-xs font-semibold text-electric">
-              View all
-            </Link>
-          </div>
-          <ul className="space-y-3">
-            {stats.recentProducts.map((p) => (
-              <li key={p._id} className="flex items-center justify-between text-sm">
-                <span className="text-navy-500 dark:text-navy-200">{p.name}</span>
-                <span className="text-navy-400 dark:text-navy-300">KSh {p.price.toLocaleString()}</span>
-              </li>
-            ))}
-            {stats.recentProducts.length === 0 && (
-              <p className="text-sm text-navy-300 dark:text-navy-400">No products yet.</p>
-            )}
-          </ul>
+      <div className="mt-6 rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm font-semibold text-navy dark:text-cream">Recent Products</p>
+          <Link href="/admin/products" className="text-xs font-semibold text-electric">
+            View all
+          </Link>
         </div>
-
-        <div className="rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-navy dark:text-cream">Recent Activity</p>
-            <Link href="/admin/audit-log" className="text-xs font-semibold text-electric">
-              View all
-            </Link>
-          </div>
-          <ul className="space-y-3">
-            {stats.recentActivity.map((entry) => (
-              <li key={entry._id} className="text-sm">
-                <p className="text-navy-500 dark:text-navy-200">
-                  <span className="font-semibold text-navy dark:text-cream">{entry.actor}</span>{' '}
-                  {entry.action.replace('.', ' ').replace('_', ' ')}
-                  {entry.target ? ` - ${entry.target}` : ''}
-                </p>
-                <p className="text-xs text-navy-400 dark:text-navy-400">
-                  {new Date(entry.createdAt).toLocaleString()}
-                </p>
-              </li>
-            ))}
-            {stats.recentActivity.length === 0 && (
-              <p className="text-sm text-navy-300 dark:text-navy-400">No activity recorded yet.</p>
-            )}
-          </ul>
-        </div>
+        <ul className="space-y-3">
+          {stats.recentProducts.map((p) => (
+            <li key={p._id} className="flex items-center justify-between text-sm">
+              <span className="text-navy-500 dark:text-navy-200">{p.name}</span>
+              <span className="text-navy-400 dark:text-navy-300">KSh {p.price.toLocaleString()}</span>
+            </li>
+          ))}
+          {stats.recentProducts.length === 0 && (
+            <p className="text-sm text-navy-300 dark:text-navy-400">No products yet.</p>
+          )}
+        </ul>
       </div>
     </div>
   );
