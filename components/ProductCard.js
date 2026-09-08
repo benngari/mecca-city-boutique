@@ -2,9 +2,12 @@
 import Image from 'next/image';
 import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
 
+const NEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
 export default function ProductCard({ product }) {
   const image = product.images?.[0]?.url;
   const soldOut = product.stockStatus === 'sold_out';
+  const isNew = product.createdAt && Date.now() - new Date(product.createdAt).getTime() < NEW_WINDOW_MS;
   const waHref = buildWhatsAppLink(
     productWhatsAppMessage(product.name, { sku: product.sku, imageUrl: product.images?.[0]?.url })
   );
@@ -32,6 +35,11 @@ export default function ProductCard({ product }) {
         {soldOut && (
           <span className="absolute left-3 top-3 rounded-full bg-navy-900/90 px-3 py-1 text-xs font-bold text-white">
             Sold Out
+          </span>
+        )}
+        {isNew && !soldOut && (
+          <span className="absolute right-3 top-3 rounded-full bg-electric px-3 py-1 text-xs font-bold text-navy-900">
+            New
           </span>
         )}
       </Link>

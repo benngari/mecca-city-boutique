@@ -11,13 +11,21 @@ export const metadata = {
   description: 'Browse dresses, skirts, tops, jerseys, cocktail perfumes and fresheners at Mecca City Boutique.',
 };
 
-async function getProducts({ category, search }) {
+const SORT_OPTIONS = {
+  newest: { createdAt: -1 },
+  price_asc: { price: 1 },
+  price_desc: { price: -1 },
+};
+
+async function getProducts({ category, search, sort }) {
   await connectDB();
   const query = {};
   if (category && category !== 'all') query.category = category;
   if (search) query.$text = { $search: search };
 
-  const products = await Product.find(query).sort({ createdAt: -1 }).limit(60).lean();
+  const sortOrder = SORT_OPTIONS[sort] || SORT_OPTIONS.newest;
+
+  const products = await Product.find(query).sort(sortOrder).limit(60).lean();
   return JSON.parse(JSON.stringify(products));
 }
 

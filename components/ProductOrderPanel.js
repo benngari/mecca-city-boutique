@@ -4,11 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
 
-export default function ProductOrderPanel({ productName, sizes, soldOut, sku, imageUrl }) {
+export default function ProductOrderPanel({ productName, sizes, soldOut, sku, imageUrl, price }) {
   const [selectedSize, setSelectedSize] = useState(null);
   const waHref = buildWhatsAppLink(
     productWhatsAppMessage(productName, { size: selectedSize, sku, imageUrl })
   );
+  const orderLabel = soldOut ? 'Ask About Restock' : 'Order on WhatsApp';
 
   return (
     <>
@@ -36,7 +37,7 @@ export default function ProductOrderPanel({ productName, sizes, soldOut, sku, im
         </div>
       )}
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-8 hidden gap-3 sm:flex">
         <Link
           href={waHref}
           target="_blank"
@@ -44,6 +45,23 @@ export default function ProductOrderPanel({ productName, sizes, soldOut, sku, im
           className="flex-1 rounded-full bg-emerald px-6 py-3.5 text-center text-sm font-semibold text-white hover:bg-emerald/90"
         >
           {soldOut ? 'Ask About Restock on WhatsApp' : 'Order on WhatsApp'}
+        </Link>
+      </div>
+
+      {/* Sticky bar - mobile only, stays visible while scrolling the rest of the page */}
+      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-navy-100 bg-white/95 px-4 py-3 backdrop-blur-sm dark:border-navy-700 dark:bg-navy-900/95 sm:hidden">
+        {price != null && (
+          <span className="font-display text-base font-bold text-navy dark:text-cream">
+            KSh {price.toLocaleString()}
+          </span>
+        )}
+        <Link
+          href={waHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 rounded-full bg-emerald px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-emerald/90"
+        >
+          {orderLabel}
         </Link>
       </div>
     </>

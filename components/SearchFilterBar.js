@@ -9,11 +9,12 @@ export default function SearchFilterBar() {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const activeCategory = searchParams.get('category') || 'all';
+  const activeSort = searchParams.get('sort') || 'newest';
 
   function updateParams(next) {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(next).forEach(([key, value]) => {
-      if (value && value !== 'all') params.set(key, value);
+      if (value && value !== 'all' && value !== 'newest') params.set(key, value);
       else params.delete(key);
     });
     router.push(`/shop?${params.toString()}`);
@@ -26,21 +27,33 @@ export default function SearchFilterBar() {
 
   return (
     <div className="mb-8 space-y-4">
-      <form onSubmit={handleSubmit} className="flex gap-3">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search dresses, jerseys, perfumes..."
-          className="w-full rounded-full border border-navy-200 bg-white px-5 py-3 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream dark:placeholder:text-navy-400"
-        />
-        <button
-          type="submit"
-          className="shrink-0 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-cream hover:bg-electric"
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={handleSubmit} className="flex flex-1 gap-3">
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search dresses, jerseys, perfumes..."
+            className="w-full rounded-full border border-navy-200 bg-white px-5 py-3 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream dark:placeholder:text-navy-400"
+          />
+          <button
+            type="submit"
+            className="shrink-0 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-cream hover:bg-electric"
+          >
+            Search
+          </button>
+        </form>
+
+        <select
+          value={activeSort}
+          onChange={(e) => updateParams({ sort: e.target.value })}
+          className="shrink-0 rounded-full border border-navy-200 bg-white px-4 py-3 text-sm font-semibold text-navy focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
         >
-          Search
-        </button>
-      </form>
+          <option value="newest">Newest</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+        </select>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         <button

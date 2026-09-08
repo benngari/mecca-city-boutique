@@ -6,7 +6,10 @@ import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import ProductGrid from '@/components/ProductGrid';
 import ProductOrderPanel from '@/components/ProductOrderPanel';
+import ImageZoom from '@/components/ImageZoom';
 import { CATEGORIES } from '@/lib/constants';
+
+const NEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 async function getProduct(slug) {
   await connectDB();
@@ -42,32 +45,43 @@ export default async function ProductPage({ params }) {
   const related = await getRelated(product.category, product._id);
   const categoryName = CATEGORIES.find((c) => c.slug === product.category)?.name || product.category;
   const soldOut = product.stockStatus === 'sold_out';
+  const isNew = product.createdAt && Date.now() - new Date(product.createdAt).getTime() < NEW_WINDOW_MS;
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+    <div className="mx-auto max-w-7xl px-5 py-12 pb-24 md:px-8 md:pb-12">
       <div className="grid gap-10 md:grid-cols-2">
         <div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-navy-50 dark:bg-navy-800">
-            {product.images?.[0]?.url ? (
-              <Image
-                src={product.images[0].url}
-                alt={product.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-navy-300 dark:text-navy-400">No image</div>
-            )}
-          </div>
+          <ImageZoom src={product.images?.[0]?.url} alt={product.name}>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-navy-50 dark:bg-navy-800">
+              {product.images?.[0]?.url ? (
+                <Image
+                  src={product.images[0].url}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-navy-300 dark:text-navy-400">No image</div>
+              )}
+
+              {isNew && !soldOut && (
+                <span className="absolute left-3 top-3 rounded-full bg-electric px-3 py-1 text-xs font-bold text-navy-900">
+                  New
+                </span>
+              )}
+            </div>
+          </ImageZoom>
 
           {product.images?.length > 1 && (
             <div className="mt-4 grid grid-cols-4 gap-3">
               {product.images.slice(1).map((img) => (
-                <div key={img.publicId} className="relative aspect-square overflow-hidden rounded-xl bg-navy-50 dark:bg-navy-800">
-                  <Image src={img.url} alt={product.name} fill sizes="120px" className="object-cover" />
-                </div>
+                <ImageZoom key={img.publicId} src={img.url} alt={product.name}>
+                  <div className="relative aspect-square overflow-hidden rounded-xl bg-navy-50 dark:bg-navy-800">
+                    <Image src={img.url} alt={product.name} fill sizes="120px" className="object-cover" />
+                  </div>
+                </ImageZoom>
               ))}
             </div>
           )}
@@ -108,6 +122,7 @@ export default async function ProductPage({ params }) {
             soldOut={soldOut}
             sku={product.sku}
             imageUrl={product.images?.[0]?.url}
+            price={product.discountPrice || product.price}
           />
 
           <p className="mt-3 text-xs text-navy-400 dark:text-navy-400">SKU: {product.sku}</p>
