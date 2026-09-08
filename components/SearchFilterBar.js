@@ -20,6 +20,30 @@ export default function SearchFilterBar() {
     router.push(`/shop?${params.toString()}`);
   }
 
+  function removeParam(key) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    if (key === 'search') setSearch('');
+    router.push(`/shop?${params.toString()}`);
+  }
+
+  function clearAll() {
+    setSearch('');
+    router.push('/shop');
+  }
+
+  const sortLabels = {
+    price_asc: 'Price: Low to High',
+    price_desc: 'Price: High to Low',
+  };
+  const activeCategoryName = CATEGORIES.find((c) => c.slug === activeCategory)?.name;
+
+  const chips = [
+    searchParams.get('search') && { key: 'search', label: `"${searchParams.get('search')}"` },
+    activeCategory !== 'all' && activeCategoryName && { key: 'category', label: activeCategoryName },
+    activeSort !== 'newest' && sortLabels[activeSort] && { key: 'sort', label: sortLabels[activeSort] },
+  ].filter(Boolean);
+
   function handleSubmit(e) {
     e.preventDefault();
     updateParams({ search });
@@ -80,6 +104,27 @@ export default function SearchFilterBar() {
           </button>
         ))}
       </div>
+
+      {chips.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {chips.map((chip) => (
+            <button
+              key={chip.key}
+              onClick={() => removeParam(chip.key)}
+              className="flex items-center gap-1.5 rounded-full bg-electric/10 px-3 py-1.5 text-xs font-semibold text-electric-600 hover:bg-electric/20 dark:text-electric-400"
+            >
+              {chip.label}
+              <span aria-hidden="true">x</span>
+            </button>
+          ))}
+          <button
+            onClick={clearAll}
+            className="text-xs font-semibold text-navy-400 underline hover:text-navy dark:text-navy-300 dark:hover:text-cream"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
     </div>
   );
 }
