@@ -3,11 +3,15 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ImageLightbox from '@/components/admin/ImageLightbox';
+import { useToast } from '@/components/admin/useToast';
+import { useConfirmDialog } from '@/components/admin/useConfirmDialog';
 
 export default function TrashPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
+  const { showToast, ToastDisplay } = useToast();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
 
   async function loadTrash() {
     setLoading(true);
@@ -26,20 +30,24 @@ export default function TrashPage() {
     const res = await fetch(`/api/products/${id}/restore`, { method: 'POST' });
     if (res.ok) {
       setProducts((prev) => prev.filter((p) => p._id !== id));
+      showToast('Product restored.');
     } else {
-      alert('Failed to restore product.');
+      showToast('Failed to restore product.', 'error');
     }
     setBusyId(null);
   }
 
   async function handlePermanentDelete(id) {
-    if (!confirm('Permanently delete this product and its images? This cannot be undone.')) return;
+    const ok = await confirm('Permanently delete this product and its images? This cannot be undone.', 'danger');
+    if (!ok) return;
+
     setBusyId(id);
     const res = await fetch(`/api/products/${id}/permanent-delete`, { method: 'DELETE' });
     if (res.ok) {
       setProducts((prev) => prev.filter((p) => p._id !== id));
+      showToast('Product permanently deleted.');
     } else {
-      alert('Failed to delete product.');
+      showToast('Failed to delete product.', 'error');
     }
     setBusyId(null);
   }
@@ -118,6 +126,9 @@ export default function TrashPage() {
           </tbody>
         </table>
       </div>
+
+      {ConfirmDialog}
+      {ToastDisplay}
     </div>
   );
 }

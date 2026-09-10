@@ -7,6 +7,7 @@ import Product from '@/models/Product';
 import ProductGrid from '@/components/ProductGrid';
 import ProductOrderPanel from '@/components/ProductOrderPanel';
 import ImageZoom from '@/components/ImageZoom';
+import { shimmerDataUrl } from '@/lib/shimmer';
 import { CATEGORIES } from '@/lib/constants';
 
 const NEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
@@ -59,6 +60,8 @@ export default async function ProductPage({ params }) {
                   alt={product.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
+                  placeholder="blur"
+                  blurDataURL={shimmerDataUrl(600, 750)}
                   className="object-cover"
                   priority
                 />
@@ -79,7 +82,15 @@ export default async function ProductPage({ params }) {
               {product.images.slice(1).map((img) => (
                 <ImageZoom key={img.publicId} src={img.url} alt={product.name}>
                   <div className="relative aspect-square overflow-hidden rounded-xl bg-navy-50 dark:bg-navy-800">
-                    <Image src={img.url} alt={product.name} fill sizes="120px" className="object-cover" />
+                    <Image
+                      src={img.url}
+                      alt={product.name}
+                      fill
+                      sizes="120px"
+                      placeholder="blur"
+                      blurDataURL={shimmerDataUrl(150, 150)}
+                      className="object-cover"
+                    />
                   </div>
                 </ImageZoom>
               ))}

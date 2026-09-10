@@ -1,6 +1,7 @@
 ﻿import Link from 'next/link';
 import Image from 'next/image';
 import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
+import { shimmerDataUrl } from '@/lib/shimmer';
 
 const NEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -21,6 +22,8 @@ export default function ProductCard({ product }) {
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
+            placeholder="blur"
+            blurDataURL={shimmerDataUrl(400, 500)}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

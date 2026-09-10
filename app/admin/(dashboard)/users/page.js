@@ -1,11 +1,13 @@
 ﻿'use client';
 
 import { useEffect, useState } from 'react';
+import { useToast } from '@/components/admin/useToast';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
+  const { showToast, ToastDisplay } = useToast();
 
   async function loadUsers() {
     setLoading(true);
@@ -29,9 +31,10 @@ export default function UsersPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error || 'Could not update user.');
+      showToast(data.error || 'Could not update user.', 'error');
     } else {
       setUsers((prev) => prev.map((u) => (u._id === id ? data.user : u)));
+      showToast(nextValue ? 'User activated.' : 'User deactivated.');
     }
     setBusyId(null);
   }
@@ -49,9 +52,9 @@ export default function UsersPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error || 'Could not reset password.');
+      showToast(data.error || 'Could not reset password.', 'error');
     } else {
-      alert('Password reset successfully.');
+      showToast('Password reset successfully.');
     }
     setBusyId(null);
   }
@@ -131,6 +134,8 @@ export default function UsersPage() {
           </tbody>
         </table>
       </div>
+
+      {ToastDisplay}
     </div>
   );
 }

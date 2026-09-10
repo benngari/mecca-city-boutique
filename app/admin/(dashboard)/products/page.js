@@ -4,6 +4,8 @@ import { useEffect, useState, Fragment } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageLightbox from '@/components/admin/ImageLightbox';
+import { useToast } from '@/components/admin/useToast';
+import { useConfirmDialog } from '@/components/admin/useConfirmDialog';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -13,6 +15,8 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState(null);
   const [formQuantity, setFormQuantity] = useState('1');
   const [formType, setFormType] = useState('sell');
+  const { showToast, ToastDisplay } = useToast();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
 
   async function loadProducts() {
     setLoading(true);
@@ -31,12 +35,15 @@ export default function AdminProductsPage() {
   }, []);
 
   async function handleDelete(id) {
-    if (!confirm('Move this product to Trash? You can restore it later.')) return;
+    const ok = await confirm('Move this product to Trash? You can restore it later.', 'danger');
+    if (!ok) return;
+
     const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
     if (res.ok) {
       setProducts((prev) => prev.filter((p) => p._id !== id));
+      showToast('Product moved to Trash.');
     } else {
-      alert('Failed to delete product.');
+      showToast('Failed to delete product.', 'error');
     }
   }
 
@@ -53,7 +60,7 @@ export default function AdminProductsPage() {
   async function handleSaveStock(id) {
     const quantity = Number(formQuantity);
     if (!quantity || quantity <= 0) {
-      alert('Enter a quantity greater than 0.');
+      showToast('Enter a quantity greater than 0.', 'error');
       return;
     }
 
@@ -68,14 +75,15 @@ export default function AdminProductsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || 'Could not update stock.');
+        showToast(data.error || 'Could not update stock.', 'error');
         return;
       }
 
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+      showToast(formType === 'sell' ? 'Sale recorded.' : 'Stock added.');
       closeStockForm();
     } catch {
-      alert('Something went wrong. Try again.');
+      showToast('Something went wrong. Try again.', 'error');
     } finally {
       setSaving(false);
     }
@@ -147,7 +155,7 @@ export default function AdminProductsPage() {
                 <tr className="border-b border-navy-50 last:border-0 dark:border-navy-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                                            <ImageLightbox src={p.images?.[0]?.url} alt={p.name}>
+                      <ImageLightbox src={p.images?.[0]?.url} alt={p.name}>
                         <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-navy-50 dark:bg-navy-700">
                           {p.images?.[0]?.url && (
                             <Image src={p.images[0].url} alt={p.name} fill sizes="48px" className="object-cover" />
@@ -246,6 +254,9 @@ export default function AdminProductsPage() {
           </tbody>
         </table>
       </div>
+
+      {ConfirmDialog}
+      {ToastDisplay}
     </div>
   );
 }

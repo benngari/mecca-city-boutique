@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LOGO_URL, SHOP_NAME } from '@/lib/constants';
 import ThemeToggle from './ThemeToggle';
 
@@ -16,9 +16,23 @@ const LINKS = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 8);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-navy-100 bg-cream/90 backdrop-blur dark:border-navy-700 dark:bg-navy-900/90">
+    <header
+      className={`sticky top-0 z-40 border-b border-navy-100 bg-cream/90 backdrop-blur transition-shadow dark:border-navy-700 dark:bg-navy-900/90 ${
+        scrolled ? 'shadow-md shadow-navy-900/5 dark:shadow-black/20' : ''
+      }`}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image src={LOGO_URL} alt={`${SHOP_NAME} logo`} width={36} height={36} className="rounded-md" />
