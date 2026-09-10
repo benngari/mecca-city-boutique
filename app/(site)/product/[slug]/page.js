@@ -7,6 +7,7 @@ import Product from '@/models/Product';
 import ProductGrid from '@/components/ProductGrid';
 import ProductOrderPanel from '@/components/ProductOrderPanel';
 import ImageZoom from '@/components/ImageZoom';
+import CompleteTheLook from '@/components/CompleteTheLook';
 import { shimmerDataUrl } from '@/lib/shimmer';
 import { CATEGORIES } from '@/lib/constants';
 
@@ -22,6 +23,13 @@ async function getRelated(category, excludeId) {
   await connectDB();
   const related = await Product.find({ category, _id: { $ne: excludeId } }).limit(4).lean();
   return JSON.parse(JSON.stringify(related));
+}
+
+async function getBundleItems(bundleId, excludeId) {
+  if (!bundleId) return [];
+  await connectDB();
+  const items = await Product.find({ bundleId, _id: { $ne: excludeId }, deletedAt: null }).lean();
+  return JSON.parse(JSON.stringify(items));
 }
 
 export async function generateMetadata({ params }) {
@@ -43,7 +51,11 @@ export default async function ProductPage({ params }) {
   const product = await getProduct(params.slug);
   if (!product) notFound();
 
-  const related = await getRelated(product.category, product._id);
+  const [related, bundleItems] = await Promise.all([
+    getRelated(product.category, product._id),
+    getBundleItems(product.bundleId, product._id),
+  ]);
+
   const categoryName = CATEGORIES.find((c) => c.slug === product.category)?.name || product.category;
   const soldOut = product.stockStatus === 'sold_out';
   const isNew = product.createdAt && Date.now() - new Date(product.createdAt).getTime() < NEW_WINDOW_MS;
@@ -128,6 +140,7 @@ export default async function ProductPage({ params }) {
           <p className="whitespace-pre-line text-navy-500 dark:text-navy-200">{product.description}</p>
 
           <ProductOrderPanel
+            productId={product._id}
             productName={product.name}
             sizes={product.sizes || []}
             soldOut={soldOut}
@@ -137,6 +150,8 @@ export default async function ProductPage({ params }) {
           />
 
           <p className="mt-3 text-xs text-navy-400 dark:text-navy-400">SKU: {product.sku}</p>
+
+          <CompleteTheLook mainProduct={product} items={bundleItems} />
         </div>
       </div>
 

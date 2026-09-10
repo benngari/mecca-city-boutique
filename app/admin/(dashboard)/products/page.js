@@ -185,6 +185,11 @@ export default function AdminProductsPage() {
                     {p.stockQuantity != null && (
                       <p className="mt-1 text-xs text-navy-400 dark:text-navy-300">{p.stockQuantity} left</p>
                     )}
+                    {p.stockStatus === 'sold_out' && p.restockRequestCount > 0 && (
+                      <p className="mt-1 text-xs font-semibold text-gold">
+                        {p.restockRequestCount} asked to be notified
+                      </p>
+                    )}
                   </td>
                   <td className="px-4 py-3">{p.featured ? '\u2605' : '-'}</td>
                   <td className="px-4 py-3 text-right">

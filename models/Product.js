@@ -26,6 +26,8 @@ const ProductSchema = new mongoose.Schema(
     stockQuantity: { type: Number, min: 0, default: null },
     featured: { type: Boolean, default: false },
     sku: { type: String, required: true, unique: true, trim: true },
+    bundleId: { type: String, default: null, trim: true, index: true },
+    restockRequestCount: { type: Number, default: 0 },
     deletedAt: { type: Date, default: null, index: true },
   },
   { timestamps: true }

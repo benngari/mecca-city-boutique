@@ -17,13 +17,19 @@ const EMPTY = {
   stockQuantity: '',
   featured: false,
   sku: '',
+  bundleId: '',
 };
 
 export default function ProductForm({ initialProduct, productId }) {
   const router = useRouter();
   const [form, setForm] = useState(
     initialProduct
-      ? { ...EMPTY, ...initialProduct, stockQuantity: initialProduct.stockQuantity ?? '' }
+      ? {
+          ...EMPTY,
+          ...initialProduct,
+          stockQuantity: initialProduct.stockQuantity ?? '',
+          bundleId: initialProduct.bundleId ?? '',
+        }
       : EMPTY
   );
   const [saving, setSaving] = useState(false);
@@ -76,6 +82,7 @@ export default function ProductForm({ initialProduct, productId }) {
       discountPrice: form.discountPrice ? Number(form.discountPrice) : null,
       stockQuantity,
       stockStatus,
+      bundleId: form.bundleId.trim() ? form.bundleId.trim() : null,
     };
 
     try {
@@ -280,6 +287,21 @@ export default function ProductForm({ initialProduct, productId }) {
           </select>
         </label>
       </div>
+
+      <label className="block text-sm font-semibold text-navy">
+        Bundle ID (optional)
+        <input
+          type="text"
+          value={form.bundleId}
+          onChange={(e) => update('bundleId', e.target.value)}
+          placeholder="e.g. wedding-look-1"
+          className="mt-1 w-full max-w-xs rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+        />
+        <span className="mt-1 block text-xs font-normal text-navy-400">
+          Give 2-3 products the exact same Bundle ID to group them as a "Complete the Look" set
+          on the product page. Leave blank if this product isn't part of a set.
+        </span>
+      </label>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="flex items-center gap-2 text-sm font-semibold text-navy">

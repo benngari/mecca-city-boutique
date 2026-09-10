@@ -19,6 +19,7 @@ export async function middleware(request) {
   const isAdminRoute = pathname.startsWith('/admin') && !PUBLIC_ADMIN_PATHS.includes(pathname);
   const isAdminApi =
     pathname.startsWith('/api/products') &&
+    !pathname.endsWith('/notify-restock') &&
     (['POST', 'PUT', 'DELETE'].includes(request.method) || pathname.endsWith('/trash'));
   const isUploadApi = pathname.startsWith('/api/upload');
   const isUsersApi = pathname.startsWith('/api/users');

@@ -2,14 +2,24 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { buildWhatsAppLink, productWhatsAppMessage } from '@/lib/whatsapp';
+import { buildWhatsAppLink, productWhatsAppMessage, restockWhatsAppMessage } from '@/lib/whatsapp';
 
-export default function ProductOrderPanel({ productName, sizes, soldOut, sku, imageUrl, price }) {
+export default function ProductOrderPanel({ productId, productName, sizes, soldOut, sku, imageUrl, price }) {
   const [selectedSize, setSelectedSize] = useState(null);
-  const waHref = buildWhatsAppLink(
-    productWhatsAppMessage(productName, { size: selectedSize, sku, imageUrl })
-  );
-  const orderLabel = soldOut ? 'Ask About Restock' : 'Order on WhatsApp';
+
+  const waHref = soldOut
+    ? buildWhatsAppLink(restockWhatsAppMessage(productName, { sku }))
+    : buildWhatsAppLink(productWhatsAppMessage(productName, { size: selectedSize, sku, imageUrl }));
+
+  const orderLabel = soldOut ? 'Notify Me When Back in Stock' : 'Order on WhatsApp';
+
+  // Best-effort tally so the admin can see restock demand - never blocks the
+  // WhatsApp navigation even if this fails.
+  function handleNotifyClick() {
+    if (soldOut && productId) {
+      fetch(`/api/products/${productId}/notify-restock`, { method: 'POST' }).catch(() => {});
+    }
+  }
 
   return (
     <>
@@ -42,9 +52,10 @@ export default function ProductOrderPanel({ productName, sizes, soldOut, sku, im
           href={waHref}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={handleNotifyClick}
           className="flex-1 rounded-full bg-emerald px-6 py-3.5 text-center text-sm font-semibold text-white hover:bg-emerald/90"
         >
-          {soldOut ? 'Ask About Restock on WhatsApp' : 'Order on WhatsApp'}
+          {orderLabel}
         </Link>
       </div>
 
@@ -59,6 +70,7 @@ export default function ProductOrderPanel({ productName, sizes, soldOut, sku, im
           href={waHref}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={handleNotifyClick}
           className="flex-1 rounded-full bg-emerald px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-emerald/90"
         >
           {orderLabel}
