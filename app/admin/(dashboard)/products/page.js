@@ -7,6 +7,10 @@ import ImageLightbox from '@/components/admin/ImageLightbox';
 import { useToast } from '@/components/admin/useToast';
 import { useConfirmDialog } from '@/components/admin/useConfirmDialog';
 
+function todayInputValue() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +19,8 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState(null);
   const [formQuantity, setFormQuantity] = useState('1');
   const [formType, setFormType] = useState('sell');
+  const [formAmountReceived, setFormAmountReceived] = useState('');
+  const [formSoldAt, setFormSoldAt] = useState(todayInputValue());
   const { showToast, ToastDisplay } = useToast();
   const { confirm, ConfirmDialog } = useConfirmDialog();
 
@@ -47,14 +53,26 @@ export default function AdminProductsPage() {
     }
   }
 
-  function openStockForm(id) {
-    setEditingId(id);
+  function openStockForm(product) {
+    setEditingId(product._id);
     setFormQuantity('1');
     setFormType('sell');
+    setFormSoldAt(todayInputValue());
+    const unitPrice = product.discountPrice || product.price;
+    setFormAmountReceived(unitPrice ? String(unitPrice) : '');
   }
 
   function closeStockForm() {
     setEditingId(null);
+  }
+
+  function handleQuantityChange(value, product) {
+    setFormQuantity(value);
+    if (formType === 'sell') {
+      const unitPrice = product.discountPrice || product.price;
+      const qty = Number(value) || 0;
+      setFormAmountReceived(unitPrice ? String(unitPrice * qty) : '');
+    }
   }
 
   async function handleSaveStock(id) {
@@ -64,14 +82,33 @@ export default function AdminProductsPage() {
       return;
     }
 
-    const endpoint = formType === 'sell' ? 'sell' : 'restock';
     setSaving(true);
     try {
-      const res = await fetch(`/api/products/${id}/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity }),
-      });
+      let res;
+      if (formType === 'sell') {
+        const amountReceived = Number(formAmountReceived);
+        if (!(amountReceived >= 0)) {
+          showToast('Enter the amount actually received for this sale.', 'error');
+          setSaving(false);
+          return;
+        }
+        res = await fetch(`/api/products/${id}/sell`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quantity,
+            amountReceived,
+            soldAt: formSoldAt ? new Date(formSoldAt).toISOString() : undefined,
+          }),
+        });
+      } else {
+        res = await fetch(`/api/products/${id}/restock`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity }),
+        });
+      }
+
       const data = await res.json();
 
       if (!res.ok) {
@@ -183,7 +220,9 @@ export default function AdminProductsPage() {
                       {p.stockStatus.replace('_', ' ')}
                     </span>
                     {p.stockQuantity != null && (
-                      <p className="mt-1 text-xs text-navy-400 dark:text-navy-300">{p.stockQuantity} left</p>
+                      <p className="mt-1 text-xs text-navy-400 dark:text-navy-300">
+                        {p.stockQuantity} {p.unitType === 'ml' ? 'ml' : ''} left
+                      </p>
                     )}
                     {p.stockStatus === 'sold_out' && p.restockRequestCount > 0 && (
                       <p className="mt-1 text-xs font-semibold text-gold">
@@ -195,7 +234,7 @@ export default function AdminProductsPage() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex flex-wrap justify-end gap-3">
                       <button
-                        onClick={() => (editingId === p._id ? closeStockForm() : openStockForm(p._id))}
+                        onClick={() => (editingId === p._id ? closeStockForm() : openStockForm(p))}
                         className="font-semibold text-electric"
                       >
                         {editingId === p._id ? 'Close' : 'Update Stock'}
@@ -227,15 +266,47 @@ export default function AdminProductsPage() {
                         </label>
 
                         <label className="text-xs font-semibold text-navy dark:text-cream">
-                          How many?
+                          {p.unitType === 'ml' ? 'How many ml?' : 'How many?'}
                           <input
                             type="number"
                             min="1"
                             value={formQuantity}
-                            onChange={(e) => setFormQuantity(e.target.value)}
+                            onChange={(e) => handleQuantityChange(e.target.value, p)}
                             className="mt-1 block w-24 rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
                           />
                         </label>
+
+                        {formType === 'sell' && (
+                          <>
+                            <label className="text-xs font-semibold text-navy dark:text-cream">
+                              Amount received (KSh)
+                              <input
+                                type="number"
+                                min="0"
+                                value={formAmountReceived}
+                                onChange={(e) => setFormAmountReceived(e.target.value)}
+                                className="mt-1 block w-32 rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
+                              />
+                              <span className="mt-1 block max-w-[8rem] text-[11px] font-normal text-navy-400">
+                                Adjust if the customer bargained.
+                              </span>
+                            </label>
+
+                            <label className="text-xs font-semibold text-navy dark:text-cream">
+                              Date of sale
+                              <input
+                                type="date"
+                                value={formSoldAt}
+                                max={todayInputValue()}
+                                onChange={(e) => setFormSoldAt(e.target.value)}
+                                className="mt-1 block rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
+                              />
+                              <span className="mt-1 block text-[11px] font-normal text-navy-400">
+                                Backdate if entering a missed sale.
+                              </span>
+                            </label>
+                          </>
+                        )}
 
                         <button
                           onClick={() => handleSaveStock(p._id)}

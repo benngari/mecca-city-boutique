@@ -3,10 +3,9 @@ import { connectDB } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import { getSession } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
+import { computeStockStatus } from '@/lib/stockStatus';
 
 // POST /api/products/[id]/restock  body: { quantity: number }  (admin only)
-// Adds to stockQuantity and auto-updates stockStatus. If the product had no
-// quantity tracked yet, this starts tracking it from `quantity`.
 export async function POST(request, { params }) {
   const session = await getSession();
   if (!session) {
@@ -28,9 +27,7 @@ export async function POST(request, { params }) {
     }
 
     const newQuantity = (product.stockQuantity || 0) + addedQuantity;
-    let stockStatus = 'in_stock';
-    if (newQuantity === 0) stockStatus = 'sold_out';
-    else if (newQuantity <= 3) stockStatus = 'low_stock';
+    const stockStatus = await computeStockStatus(product, newQuantity);
 
     product.stockQuantity = newQuantity;
     product.stockStatus = stockStatus;
@@ -40,7 +37,7 @@ export async function POST(request, { params }) {
       actor: session.email,
       action: 'stock.restock',
       target: product.name,
-      details: `Added ${addedQuantity}, ${newQuantity} now in stock`,
+      details: `Added ${addedQuantity} ${product.unitType}, ${newQuantity} now in stock`,
     });
 
     return NextResponse.json({ product });

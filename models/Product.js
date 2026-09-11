@@ -15,6 +15,9 @@ const ProductSchema = new mongoose.Schema(
     description: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
     discountPrice: { type: Number, min: 0, default: null },
+    costPrice: { type: Number, min: 0, default: null }, // what the shop paid, per unit (per piece, or per ml for perfumes)
+    unitType: { type: String, enum: ['piece', 'ml'], default: 'piece' },
+    lowStockThreshold: { type: Number, min: 0, default: null }, // overrides the global default when set
     category: { type: String, required: true, index: true },
     images: { type: [ImageSchema], default: [] },
     sizes: { type: [String], default: [] },

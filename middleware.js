@@ -24,8 +24,9 @@ export async function middleware(request) {
   const isUploadApi = pathname.startsWith('/api/upload');
   const isUsersApi = pathname.startsWith('/api/users');
   const isAuditApi = pathname.startsWith('/api/audit-log');
+  const isSettingsApi = pathname.startsWith('/api/settings');
 
-  if (!isAdminRoute && !isAdminApi && !isUploadApi && !isUsersApi && !isAuditApi) {
+  if (!isAdminRoute && !isAdminApi && !isUploadApi && !isUsersApi && !isAuditApi && !isSettingsApi) {
     return NextResponse.next();
   }
 
@@ -45,5 +46,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/products/:path*', '/api/upload/:path*', '/api/users/:path*', '/api/audit-log/:path*'],
+  matcher: ['/admin/:path*', '/api/products/:path*', '/api/upload/:path*', '/api/users/:path*', '/api/audit-log/:path*', '/api/settings/:path*'],
 };

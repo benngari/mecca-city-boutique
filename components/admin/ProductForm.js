@@ -10,6 +10,9 @@ const EMPTY = {
   description: '',
   price: '',
   discountPrice: '',
+  costPrice: '',
+  unitType: 'piece',
+  lowStockThreshold: '',
   category: CATEGORIES[0].slug,
   images: [],
   sizes: [],
@@ -29,6 +32,8 @@ export default function ProductForm({ initialProduct, productId }) {
           ...initialProduct,
           stockQuantity: initialProduct.stockQuantity ?? '',
           bundleId: initialProduct.bundleId ?? '',
+          costPrice: initialProduct.costPrice ?? '',
+          lowStockThreshold: initialProduct.lowStockThreshold ?? '',
         }
       : EMPTY
   );
@@ -80,6 +85,8 @@ export default function ProductForm({ initialProduct, productId }) {
       ...form,
       price: Number(form.price),
       discountPrice: form.discountPrice ? Number(form.discountPrice) : null,
+      costPrice: form.costPrice !== '' ? Number(form.costPrice) : null,
+      lowStockThreshold: form.lowStockThreshold !== '' ? Number(form.lowStockThreshold) : null,
       stockQuantity,
       stockStatus,
       bundleId: form.bundleId.trim() ? form.bundleId.trim() : null,
@@ -191,6 +198,50 @@ export default function ProductForm({ initialProduct, productId }) {
         </label>
       </div>
 
+      <div className="grid gap-5 sm:grid-cols-3">
+        <label className="block text-sm font-semibold text-navy">
+          Cost Price (optional)
+          <input
+            type="number"
+            min="0"
+            value={form.costPrice}
+            onChange={(e) => update('costPrice', e.target.value)}
+            placeholder="What you paid, per unit"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          />
+          <span className="mt-1 block text-xs font-normal text-navy-400">
+            Used to calculate profit automatically when a sale is recorded.
+          </span>
+        </label>
+
+        <label className="block text-sm font-semibold text-navy">
+          Sold By
+          <select
+            value={form.unitType}
+            onChange={(e) => update('unitType', e.target.value)}
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          >
+            <option value="piece">Piece (e.g. clothing)</option>
+            <option value="ml">Millilitres - ml (e.g. perfume refills)</option>
+          </select>
+        </label>
+
+        <label className="block text-sm font-semibold text-navy">
+          Low Stock Alert At (optional)
+          <input
+            type="number"
+            min="0"
+            value={form.lowStockThreshold}
+            onChange={(e) => update('lowStockThreshold', e.target.value)}
+            placeholder={form.unitType === 'ml' ? 'e.g. 100' : 'e.g. 3'}
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          />
+          <span className="mt-1 block text-xs font-normal text-navy-400">
+            Leave blank to use the site-wide default for this unit (set in Settings).
+          </span>
+        </label>
+      </div>
+
       <div>
         <p className="text-sm font-semibold text-navy">Available Sizes</p>
         <p className="mt-0.5 text-xs text-navy-400">
@@ -258,13 +309,13 @@ export default function ProductForm({ initialProduct, productId }) {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block text-sm font-semibold text-navy">
-          Stock Quantity (optional)
+          Stock Quantity (optional) - {form.unitType === 'ml' ? 'ml' : 'pieces'}
           <input
             type="number"
             min="0"
             value={form.stockQuantity}
             onChange={(e) => update('stockQuantity', e.target.value)}
-            placeholder="e.g. 12"
+            placeholder={form.unitType === 'ml' ? 'e.g. 1000' : 'e.g. 12'}
             className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
           />
           <span className="mt-1 block text-xs font-normal text-navy-400">

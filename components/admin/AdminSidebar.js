@@ -9,10 +9,13 @@ const LINKS = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/products/new', label: 'Add Product' },
+  { href: '/admin/sales', label: 'Sales' },
+  { href: '/admin/analytics', label: 'Analytics' },
   { href: '/admin/reports', label: 'Reports' },
   { href: '/admin/trash', label: 'Trash' },
   { href: '/admin/audit-log', label: 'Audit Log' },
   { href: '/admin/users', label: 'Users' },
+  { href: '/admin/settings', label: 'Settings' },
 ];
 
 export default function AdminSidebar() {
@@ -21,11 +24,13 @@ export default function AdminSidebar() {
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
+    // Hard navigation so the cleared session cookie is guaranteed to be picked up
     window.location.href = '/admin/login?loggedout=true';
   }
 
   return (
     <>
+      {/* Mobile top bar with hamburger trigger */}
       <div className="flex items-center justify-between border-b border-navy-700 bg-navy-900 p-4 md:hidden">
         <p className="font-display text-lg font-bold text-cream">
           MCB <span className="text-electric-400">Admin</span>
@@ -45,6 +50,7 @@ export default function AdminSidebar() {
         </div>
       </div>
 
+      {/* Mobile off-canvas drawer, slides in from the left */}
       {open && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
@@ -102,6 +108,7 @@ export default function AdminSidebar() {
         </div>
       )}
 
+      {/* Desktop sidebar, always visible */}
       <aside className="hidden md:flex md:h-screen md:w-60 md:flex-col md:justify-between md:border-r md:border-navy-700 md:bg-navy-900 md:p-6">
         <div>
           <p className="mb-8 font-display text-lg font-bold text-cream">
