@@ -1,7 +1,7 @@
 ﻿export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { getDailySales, getSalesList, getSalesTotals } from '@/lib/salesAnalytics';
+import { getDailySales, getSalesList, getSalesTotals, getExpensesTotal } from '@/lib/salesAnalytics';
 import StatsCard from '@/components/admin/StatsCard';
 
 const RANGE_OPTIONS = [
@@ -27,11 +27,13 @@ export default async function SalesPage({ searchParams }) {
   const endDate = endOfDay(new Date());
   const startDate = startOfDay(new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000));
 
-  const [daily, totals, recentSales] = await Promise.all([
+  const [daily, totals, recentSales, expensesTotal] = await Promise.all([
     getDailySales(startDate, endDate),
     getSalesTotals(startDate, endDate),
     getSalesList(startDate, endDate, 50),
+    getExpensesTotal(startDate, endDate),
   ]);
+  const netProfit = totals.profit - expensesTotal;
 
   return (
     <div>
@@ -43,6 +45,12 @@ export default async function SalesPage({ searchParams }) {
           </p>
         </div>
         <div className="flex gap-2">
+          <Link
+            href="/admin/expenses"
+            className="rounded-full border border-navy-200 px-4 py-2 text-xs font-semibold text-navy hover:bg-navy-50 dark:border-navy-600 dark:text-cream dark:hover:bg-navy-800"
+          >
+            Expenses
+          </Link>
           {RANGE_OPTIONS.map((opt) => (
             <Link
               key={opt.value}
@@ -61,9 +69,18 @@ export default async function SalesPage({ searchParams }) {
 
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatsCard label="Revenue" value={`KSh ${totals.revenue.toLocaleString()}`} accent="text-navy dark:text-cream" />
-        <StatsCard label="Profit" value={`KSh ${totals.profit.toLocaleString()}`} accent="text-emerald" />
         <StatsCard label="Items Sold" value={totals.itemsSold} accent="text-electric-600" />
         <StatsCard label="Sales Recorded" value={totals.saleCount} accent="text-gold" />
+        <StatsCard label="Expenses" value={`KSh ${expensesTotal.toLocaleString()}`} accent="text-red-500" />
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <StatsCard label="Gross Profit" value={`KSh ${totals.profit.toLocaleString()}`} accent="text-emerald" />
+        <StatsCard
+          label="Net Profit (after expenses)"
+          value={`KSh ${netProfit.toLocaleString()}`}
+          accent={netProfit >= 0 ? 'text-emerald' : 'text-red-500'}
+        />
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white dark:border-navy-700 dark:bg-navy-800">
