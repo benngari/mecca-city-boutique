@@ -119,47 +119,47 @@ export default function ProductForm({ initialProduct, productId }) {
       {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
 
       <div>
-        <label className="block text-sm font-semibold text-navy">Product Images</label>
+        <label className="block text-sm font-semibold text-navy dark:text-cream">Product Images</label>
         <div className="mt-2">
           <ImageUploader images={form.images} onChange={(images) => update('images', images)} />
         </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Product Name
           <input
             required
             value={form.name}
             onChange={(e) => update('name', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
         </label>
 
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           SKU
           <input
             required
             value={form.sku}
             onChange={(e) => update('sku', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
         </label>
       </div>
 
-      <label className="block text-sm font-semibold text-navy">
+      <label className="block text-sm font-semibold text-navy dark:text-cream">
         Description
         <textarea
           required
           rows={4}
           value={form.description}
           onChange={(e) => update('description', e.target.value)}
-          className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
         />
       </label>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Price (KSh)
           <input
             required
@@ -167,27 +167,27 @@ export default function ProductForm({ initialProduct, productId }) {
             min="0"
             value={form.price}
             onChange={(e) => update('price', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
         </label>
 
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Discount Price (optional)
           <input
             type="number"
             min="0"
             value={form.discountPrice || ''}
             onChange={(e) => update('discountPrice', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
         </label>
 
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Category
           <select
             value={form.category}
             onChange={(e) => update('category', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           >
             {CATEGORIES.map((c) => (
               <option key={c.slug} value={c.slug}>
@@ -199,7 +199,7 @@ export default function ProductForm({ initialProduct, productId }) {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Cost Price (optional)
           <input
             type="number"
@@ -207,26 +207,26 @@ export default function ProductForm({ initialProduct, productId }) {
             value={form.costPrice}
             onChange={(e) => update('costPrice', e.target.value)}
             placeholder="What you paid, per unit"
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
-          <span className="mt-1 block text-xs font-normal text-navy-400">
+          <span className="mt-1 block text-xs font-normal text-navy-400 dark:text-navy-300">
             Used to calculate profit automatically when a sale is recorded.
           </span>
         </label>
 
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Sold By
           <select
             value={form.unitType}
             onChange={(e) => update('unitType', e.target.value)}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           >
             <option value="piece">Piece (e.g. clothing)</option>
             <option value="ml">Millilitres - ml (e.g. perfume refills)</option>
           </select>
         </label>
 
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Low Stock Alert At (optional)
           <input
             type="number"
@@ -234,17 +234,17 @@ export default function ProductForm({ initialProduct, productId }) {
             value={form.lowStockThreshold}
             onChange={(e) => update('lowStockThreshold', e.target.value)}
             placeholder={form.unitType === 'ml' ? 'e.g. 100' : 'e.g. 3'}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
-          <span className="mt-1 block text-xs font-normal text-navy-400">
+          <span className="mt-1 block text-xs font-normal text-navy-400 dark:text-navy-300">
             Leave blank to use the site-wide default for this unit (set in Settings).
           </span>
         </label>
       </div>
 
       <div>
-        <p className="text-sm font-semibold text-navy">Available Sizes</p>
-        <p className="mt-0.5 text-xs text-navy-400">
+        <p className="text-sm font-semibold text-navy dark:text-cream">Available Sizes</p>
+        <p className="mt-0.5 text-xs text-navy-400 dark:text-navy-300">
           Tap standard sizes below, or type custom sizes (e.g. jeans 30, 31, 32 or bra 34B) and press Add.
         </p>
 
@@ -256,8 +256,8 @@ export default function ProductForm({ initialProduct, productId }) {
               onClick={() => toggleSize(size)}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                 form.sizes.includes(size)
-                  ? 'border-navy bg-navy text-cream'
-                  : 'border-navy-200 text-navy-500 hover:border-navy'
+                  ? 'border-navy bg-navy text-cream dark:border-electric dark:bg-electric dark:text-navy-900'
+                  : 'border-navy-200 text-navy-500 hover:border-navy dark:border-navy-600 dark:text-navy-300 dark:hover:border-cream'
               }`}
             >
               {size}
@@ -274,7 +274,7 @@ export default function ProductForm({ initialProduct, productId }) {
               if (e.key === 'Enter') addCustomSize(e);
             }}
             placeholder="Custom size, e.g. 30, 31, 32"
-            className="w-full max-w-xs rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none"
+            className="w-full max-w-xs rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
           <button
             type="button"
@@ -308,7 +308,7 @@ export default function ProductForm({ initialProduct, productId }) {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Stock Quantity (optional) - {form.unitType === 'ml' ? 'ml' : 'pieces'}
           <input
             type="number"
@@ -316,15 +316,15 @@ export default function ProductForm({ initialProduct, productId }) {
             value={form.stockQuantity}
             onChange={(e) => update('stockQuantity', e.target.value)}
             placeholder={form.unitType === 'ml' ? 'e.g. 1000' : 'e.g. 12'}
-            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
           />
-          <span className="mt-1 block text-xs font-normal text-navy-400">
+          <span className="mt-1 block text-xs font-normal text-navy-400 dark:text-navy-300">
             Set this to track exact stock. Status below updates automatically from it. Leave
             blank to set status manually instead.
           </span>
         </label>
 
-        <label className="block text-sm font-semibold text-navy">
+        <label className="block text-sm font-semibold text-navy dark:text-cream">
           Stock Status {form.stockQuantity !== '' && <span className="text-navy-300">(auto)</span>}
           <select
             value={form.stockStatus}
@@ -339,23 +339,23 @@ export default function ProductForm({ initialProduct, productId }) {
         </label>
       </div>
 
-      <label className="block text-sm font-semibold text-navy">
+      <label className="block text-sm font-semibold text-navy dark:text-cream">
         Bundle ID (optional)
         <input
           type="text"
           value={form.bundleId}
           onChange={(e) => update('bundleId', e.target.value)}
           placeholder="e.g. wedding-look-1"
-          className="mt-1 w-full max-w-xs rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          className="mt-1 w-full max-w-xs rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
         />
-        <span className="mt-1 block text-xs font-normal text-navy-400">
+        <span className="mt-1 block text-xs font-normal text-navy-400 dark:text-navy-300">
           Give 2-3 products the exact same Bundle ID to group them as a "Complete the Look" set
           on the product page. Leave blank if this product isn't part of a set.
         </span>
       </label>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="flex items-center gap-2 text-sm font-semibold text-navy">
+        <label className="flex items-center gap-2 text-sm font-semibold text-navy dark:text-cream">
           <input
             type="checkbox"
             checked={form.featured}
@@ -377,7 +377,7 @@ export default function ProductForm({ initialProduct, productId }) {
         <button
           type="button"
           onClick={() => router.push('/admin/products')}
-          className="rounded-full border border-navy-200 px-6 py-3 text-sm font-semibold text-navy"
+          className="rounded-full border border-navy-200 px-6 py-3 text-sm font-semibold text-navy dark:text-cream"
         >
           Cancel
         </button>

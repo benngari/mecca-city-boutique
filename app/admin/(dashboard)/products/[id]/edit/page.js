@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import { notFound } from 'next/navigation';
 import { connectDB } from '@/lib/mongodb';
@@ -17,8 +17,8 @@ export default async function EditProductPage({ params }) {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-navy">Edit Product</h1>
-      <p className="mt-1 text-sm text-navy-400">{product.name}</p>
+      <h1 className="font-display text-2xl font-bold text-navy dark:text-cream">Edit Product</h1>
+      <p className="mt-1 text-sm text-navy-400 dark:text-navy-300">{product.name}</p>
       <div className="mt-6">
         <ProductForm initialProduct={product} productId={product._id} />
       </div>
