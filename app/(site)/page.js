@@ -12,7 +12,7 @@ import { getCategoriesWithPreview } from '@/lib/categories';
 
 async function getFeatured() {
   await connectDB();
-  const products = await Product.find({ featured: true }).sort({ createdAt: -1 }).limit(8).lean();
+  const products = await Product.find({ featured: true, deletedAt: null }).sort({ createdAt: -1 }).limit(8).lean();
   return JSON.parse(JSON.stringify(products));
 }
 

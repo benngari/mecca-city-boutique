@@ -19,7 +19,7 @@ const SORT_OPTIONS = {
 
 async function getProducts({ category, search, sort }) {
   await connectDB();
-  const query = {};
+  const query = { deletedAt: null };
   if (category && category !== 'all') query.category = category;
   if (search) query.$text = { $search: search };
 

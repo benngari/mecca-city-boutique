@@ -15,13 +15,13 @@ const NEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 async function getProduct(slug) {
   await connectDB();
-  const product = await Product.findOne({ slug }).lean();
+  const product = await Product.findOne({ slug, deletedAt: null }).lean();
   return product ? JSON.parse(JSON.stringify(product)) : null;
 }
 
 async function getRelated(category, excludeId) {
   await connectDB();
-  const related = await Product.find({ category, _id: { $ne: excludeId } }).limit(4).lean();
+  const related = await Product.find({ category, _id: { $ne: excludeId }, deletedAt: null }).limit(4).lean();
   return JSON.parse(JSON.stringify(related));
 }
 
