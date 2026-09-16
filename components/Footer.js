@@ -13,7 +13,7 @@ export default function Footer() {
             Mecca <span className="text-electric-400">City</span> <span className="text-emerald">Boutique</span>
           </p>
           <p className="mt-3 max-w-xs text-sm text-navy-200">
-            Dresses, skirts, tops, jerseys, cocktail perfumes and fresheners - dressed with a Chuka attitude.
+            Dresses, skirts, tops, jerseys, cocktail perfumes and fresheners - dressed with a classy attitude.
           </p>
         </div>
 
