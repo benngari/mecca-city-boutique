@@ -6,7 +6,8 @@ import Product from '@/models/Product';
 import StatsCard from '@/components/admin/StatsCard';
 import StorageBar from '@/components/admin/StorageBar';
 import { getInventorySummary } from '@/lib/inventory';
-import { getSalesTotals, getLowStockProducts } from '@/lib/salesAnalytics';
+import { getSalesTotals, getLowStockProducts, getDailySales } from '@/lib/salesAnalytics';
+import SalesChart from '@/components/admin/SalesChart';
 
 function startOfToday() {
   const d = new Date();
@@ -23,7 +24,10 @@ function endOfToday() {
 async function getStats() {
   await connectDB();
 
-  const [total, available, soldOut, trashCount, recentProducts, inventory, todaySales, lowStock] = await Promise.all([
+    const fourteenDaysAgo = new Date(Date.now() - 13 * 24 * 60 * 60 * 1000);
+  fourteenDaysAgo.setHours(0, 0, 0, 0);
+
+  const [total, available, soldOut, trashCount, recentProducts, inventory, todaySales, lowStock, dailySales] = await Promise.all([
     Product.countDocuments({ deletedAt: null }),
     Product.countDocuments({ deletedAt: null, stockStatus: { $ne: 'sold_out' } }),
     Product.countDocuments({ deletedAt: null, stockStatus: 'sold_out' }),
@@ -32,9 +36,25 @@ async function getStats() {
     getInventorySummary(),
     getSalesTotals(startOfToday(), endOfToday()),
     getLowStockProducts(),
+    getDailySales(fourteenDaysAgo, endOfToday()),
   ]);
 
-  return {
+  // Fill in the last 14 calendar days with zeros where there were no sales,
+  // in chronological order, for the chart.
+  const salesByDate = Object.fromEntries(dailySales.map((d) => [d.date, d]));
+  const chartData = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    const dateKey = d.toISOString().slice(0, 10);
+    const label = d.toLocaleDateString('en-KE', { day: 'numeric', month: 'short' });
+    chartData.push({
+      label,
+      revenue: salesByDate[dateKey]?.revenue || 0,
+      profit: salesByDate[dateKey]?.profit || 0,
+    });
+  }
+
+    return {
     total,
     available,
     soldOut,
@@ -43,6 +63,7 @@ async function getStats() {
     inventory,
     todaySales,
     lowStock,
+    chartData,
   };
 }
 
@@ -115,6 +136,11 @@ export default async function AdminDashboardPage() {
           </ul>
         </div>
       )}
+
+        <div className="mt-8 rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
+        <p className="mb-4 text-sm font-semibold text-navy dark:text-cream">Last 14 Days - Revenue & Profit</p>
+        <SalesChart data={stats.chartData} />
+      </div>
 
       <div className="mt-8 rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
         <p className="mb-4 text-sm font-semibold text-navy dark:text-cream">Stock by Category</p>
