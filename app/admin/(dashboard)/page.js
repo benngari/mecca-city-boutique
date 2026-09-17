@@ -8,6 +8,7 @@ import StorageBar from '@/components/admin/StorageBar';
 import { getInventorySummary } from '@/lib/inventory';
 import { getSalesTotals, getLowStockProducts, getDailySales } from '@/lib/salesAnalytics';
 import SalesChart from '@/components/admin/SalesChart';
+import { formatDateEAT } from '@/lib/formatDate';
 
 function startOfToday() {
   const d = new Date();
@@ -75,6 +76,7 @@ export default async function AdminDashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-navy dark:text-cream">Dashboard</h1>
+          <p className="mt-1 text-sm font-semibold text-electric-600 dark:text-electric-400">{formatDateEAT(new Date())}</p>
           <p className="mt-1 text-sm text-navy-400 dark:text-navy-300">Overview of Mecca City Boutique's catalogue.</p>
         </div>
         <div className="flex gap-2">
