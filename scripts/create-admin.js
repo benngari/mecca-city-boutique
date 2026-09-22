@@ -25,6 +25,7 @@ async function main() {
       email: { type: String, required: true, unique: true },
       passwordHash: { type: String, required: true },
       isActive: { type: Boolean, default: false },
+      role: { type: String, enum: ['owner', 'staff'], default: 'staff' },
     },
     { timestamps: true }
   );
