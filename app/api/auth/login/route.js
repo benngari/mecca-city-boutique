@@ -32,7 +32,7 @@ export async function POST(request) {
       );
     }
 
-    const token = await createSessionToken({ sub: admin._id.toString(), email: admin.email, name: admin.name });
+    const token = await createSessionToken({ sub: admin._id.toString(), email: admin.email, name: admin.name, role: admin.role });
 
     const response = NextResponse.json({ success: true, email: admin.email, name: admin.name });
     response.cookies.set(SESSION_COOKIE, token, {
