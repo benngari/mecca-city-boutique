@@ -6,12 +6,15 @@ import Image from 'next/image';
 import ImageLightbox from '@/components/admin/ImageLightbox';
 import { useToast } from '@/components/admin/useToast';
 import { useConfirmDialog } from '@/components/admin/useConfirmDialog';
+import { useAdminSession } from '@/components/admin/AdminSessionContext';
 
 function todayInputValue() {
   return new Date().toISOString().slice(0, 10);
 }
 
 export default function AdminProductsPage() {
+  const session = useAdminSession();
+  const isStaff = session?.role === 'staff';
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -133,12 +136,14 @@ export default function AdminProductsPage() {
           <h1 className="font-display text-2xl font-bold text-navy dark:text-cream">Products</h1>
           <p className="mt-1 text-sm text-navy-400 dark:text-navy-300">{products.length} product(s)</p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-cream hover:bg-electric"
-        >
-          + Add Product
-        </Link>
+        {!isStaff && (
+          <Link
+            href="/admin/products/new"
+            className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-cream hover:bg-electric"
+          >
+            + Add Product
+          </Link>
+        )}
       </div>
 
       <form
@@ -239,12 +244,16 @@ export default function AdminProductsPage() {
                       >
                         {editingId === p._id ? 'Close' : 'Update Stock'}
                       </button>
-                      <Link href={`/admin/products/${p._id}/edit`} className="font-semibold text-electric">
-                        Edit
-                      </Link>
-                      <button onClick={() => handleDelete(p._id)} className="font-semibold text-red-500">
-                        Delete
-                      </button>
+                      {!isStaff && (
+                        <>
+                          <Link href={`/admin/products/${p._id}/edit`} className="font-semibold text-electric">
+                            Edit
+                          </Link>
+                          <button onClick={() => handleDelete(p._id)} className="font-semibold text-red-500">
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -258,10 +267,11 @@ export default function AdminProductsPage() {
                           <select
                             value={formType}
                             onChange={(e) => setFormType(e.target.value)}
-                            className="mt-1 block rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream"
+                            disabled={isStaff}
+                            className="mt-1 block rounded-lg border border-navy-200 px-3 py-2 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-800 dark:text-cream disabled:opacity-60"
                           >
                             <option value="sell">Sold</option>
-                            <option value="restock">Restocked</option>
+                            {!isStaff && <option value="restock">Restocked</option>}
                           </select>
                         </label>
 

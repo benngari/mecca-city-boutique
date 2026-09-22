@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 
-const LINKS = [
+const OWNER_LINKS = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/products/new', label: 'Add Product' },
@@ -19,7 +19,10 @@ const LINKS = [
   { href: '/admin/settings', label: 'Settings' },
 ];
 
-export default function AdminSidebar() {
+const STAFF_LINKS = [{ href: '/admin/products', label: 'Products' }];
+
+export default function AdminSidebar({ role }) {
+    const links = role === 'staff' ? STAFF_LINKS : OWNER_LINKS;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -78,7 +81,7 @@ export default function AdminSidebar() {
               </div>
 
               <nav className="flex flex-col gap-1">
-                {LINKS.map((link) => {
+                {links.map((link) => {
                   const active = pathname === link.href;
                   return (
                     <Link
@@ -116,7 +119,7 @@ export default function AdminSidebar() {
             MCB <span className="text-electric-400">Admin</span>
           </p>
           <nav className="flex flex-col gap-1">
-            {LINKS.map((link) => {
+            {links.map((link) => {
               const active = pathname === link.href;
               return (
                 <Link
