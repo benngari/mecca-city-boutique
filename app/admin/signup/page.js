@@ -7,6 +7,7 @@ export default function AdminSignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('staff');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -20,7 +21,7 @@ export default function AdminSignupPage() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role }),
       });
       const data = await res.json();
 
@@ -97,6 +98,23 @@ export default function AdminSignupPage() {
             className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
           />
           <span className="mt-1 block text-xs font-normal text-navy-400">At least 8 characters.</span>
+        </label>
+                  <span className="mt-1 block text-xs font-normal text-navy-400">At least 8 characters.</span>
+        </label>
+
+        <label className="mt-4 block text-sm font-semibold text-navy">
+          Requested Role
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
+          >
+            <option value="staff">Staff - record sales only</option>
+            <option value="owner">Owner / Admin - full access</option>
+          </select>
+          <span className="mt-1 block text-xs font-normal text-navy-400">
+            An existing admin can change this when they activate your account.
+          </span>
         </label>
 
         <button

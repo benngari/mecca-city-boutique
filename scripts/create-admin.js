@@ -35,7 +35,7 @@ async function main() {
 
   const admin = await Admin.findOneAndUpdate(
     { email: ADMIN_EMAIL.toLowerCase() },
-    { name: ADMIN_NAME || 'Admin', email: ADMIN_EMAIL.toLowerCase(), passwordHash, isActive: true },
+    { name: ADMIN_NAME || 'Admin', email: ADMIN_EMAIL.toLowerCase(), passwordHash, isActive: true, role: 'owner' },
     { upsert: true, new: true }
   );
 

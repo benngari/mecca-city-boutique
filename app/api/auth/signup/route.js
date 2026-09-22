@@ -8,11 +8,13 @@ import { logAction } from '@/lib/audit';
 // needs an existing admin to activate it in User Management before it can log in.
 export async function POST(request) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, password, role } = await request.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: 'Name, email and password are required' }, { status: 400 });
     }
+
+    const requestedRole = role === 'owner' ? 'owner' : 'staff';
     if (password.length < 8) {
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
     }
@@ -29,6 +31,7 @@ export async function POST(request) {
       email: email.trim().toLowerCase(),
       passwordHash,
       isActive: false,
+      role: requestedRole,
     });
 
     await logAction({ actor: admin.email, action: 'auth.signup', target: admin.email, details: 'Awaiting activation' });
