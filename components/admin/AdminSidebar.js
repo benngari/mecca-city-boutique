@@ -22,13 +22,12 @@ const OWNER_LINKS = [
 const STAFF_LINKS = [{ href: '/admin/products', label: 'Products' }];
 
 export default function AdminSidebar({ role }) {
-    const links = role === 'staff' ? STAFF_LINKS : OWNER_LINKS;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const links = role === 'staff' ? STAFF_LINKS : OWNER_LINKS;
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
-    // Hard navigation so the cleared session cookie is guaranteed to be picked up
     window.location.href = '/admin/login?loggedout=true';
   }
 
@@ -112,8 +111,8 @@ export default function AdminSidebar({ role }) {
         </div>
       )}
 
-      {/* Desktop sidebar, always visible */}
-      <aside className="hidden md:flex md:h-screen md:w-60 md:flex-col md:justify-between md:border-r md:border-navy-700 md:bg-navy-900 md:p-6">
+      {/* Desktop sidebar - sticky so it stays visible while page content scrolls */}
+      <aside className="hidden md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:justify-between md:overflow-y-auto md:border-r md:border-navy-700 md:bg-navy-900 md:p-6">
         <div>
           <p className="mb-8 font-display text-lg font-bold text-cream">
             MCB <span className="text-electric-400">Admin</span>
