@@ -1,6 +1,5 @@
 # Mecca City Boutique — Full-Stack Website
-
-Production-ready Next.js (App Router, JavaScript) e-commerce site for Mecca City Boutique
+e-commerce website for Mecca City Boutique
 (Ndagani, Chuka). Includes a public storefront, WhatsApp ordering, and a secure `/admin`
 dashboard with full product CRUD backed by MongoDB Atlas and Cloudinary.
 
