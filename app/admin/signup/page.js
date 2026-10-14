@@ -1,4 +1,5 @@
-﻿'use client';
+﻿```jsx
+'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ export default function AdminSignupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role }),
       });
+
       const data = await res.json();
 
       if (!res.ok) {
@@ -42,12 +44,19 @@ export default function AdminSignupPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-navy-900 px-5">
         <div className="w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow-xl">
-          <p className="font-display text-2xl font-bold text-navy">Account created</p>
-          <p className="mt-3 text-sm text-navy-500">
-            An existing admin needs to activate your account in User Management before you can
-            sign in.
+          <p className="font-display text-2xl font-bold text-navy">
+            Account created
           </p>
-          <Link href="/admin/login" className="mt-6 inline-block text-sm font-semibold text-electric">
+
+          <p className="mt-3 text-sm text-navy-500">
+            An existing admin needs to activate your account in User Management
+            before you can sign in.
+          </p>
+
+          <Link
+            href="/admin/login"
+            className="mt-6 inline-block text-sm font-semibold text-electric"
+          >
             Back to login
           </Link>
         </div>
@@ -57,12 +66,22 @@ export default function AdminSignupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-navy-900 px-5">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
-        <p className="font-display text-2xl font-bold text-navy">Request Admin Access</p>
-        <p className="mt-1 text-sm text-navy-400">Mecca City Boutique</p>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl"
+      >
+        <p className="font-display text-2xl font-bold text-navy">
+          Request Admin Access
+        </p>
+
+        <p className="mt-1 text-sm text-navy-400">
+          Mecca City Boutique
+        </p>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
         )}
 
         <label className="mt-6 block text-sm font-semibold text-navy">
@@ -97,9 +116,10 @@ export default function AdminSignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none"
           />
-          <span className="mt-1 block text-xs font-normal text-navy-400">At least 8 characters.</span>
-        </label>
-                  <span className="mt-1 block text-xs font-normal text-navy-400">At least 8 characters.</span>
+
+          <span className="mt-1 block text-xs font-normal text-navy-400">
+            At least 8 characters.
+          </span>
         </label>
 
         <label className="mt-4 block text-sm font-semibold text-navy">
@@ -112,6 +132,7 @@ export default function AdminSignupPage() {
             <option value="staff">Staff - record sales only</option>
             <option value="owner">Owner / Admin - full access</option>
           </select>
+
           <span className="mt-1 block text-xs font-normal text-navy-400">
             An existing admin can change this when they activate your account.
           </span>
@@ -125,10 +146,14 @@ export default function AdminSignupPage() {
           {loading ? 'Submitting...' : 'Request Access'}
         </button>
 
-        <Link href="/admin/login" className="mt-4 block text-center text-xs font-semibold text-navy-400 hover:text-electric">
+        <Link
+          href="/admin/login"
+          className="mt-4 block text-center text-xs font-semibold text-navy-400 hover:text-electric"
+        >
           Already have an account? Sign in
         </Link>
       </form>
     </div>
   );
 }
+```
