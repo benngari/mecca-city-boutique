@@ -1,4 +1,3 @@
-﻿```jsx
 'use client';
 
 import { useState } from 'react';
@@ -156,4 +155,3 @@ export default function AdminSignupPage() {
     </div>
   );
 }
-```
