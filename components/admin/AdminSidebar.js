@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const OWNER_LINKS = [
@@ -21,18 +21,72 @@ const OWNER_LINKS = [
 
 const STAFF_LINKS = [{ href: '/admin/products', label: 'Products' }];
 
+function Spinner() {
+  return (
+    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function AdminSidebar({ role }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [pendingHref, setPendingHref] = useState(null);
+  const [loggingOut, setLoggingOut] = useState(false);
   const links = role === 'staff' ? STAFF_LINKS : OWNER_LINKS;
 
-  async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    window.location.href = '/admin/login?loggedout=true';
+  // The new page has arrived - clear the "loading" state.
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
+
+  // Safety net: never leave the spinner stuck if a navigation never completes.
+  useEffect(() => {
+    if (!pendingHref) return undefined;
+    const timer = setTimeout(() => setPendingHref(null), 10000);
+    return () => clearTimeout(timer);
+  }, [pendingHref]);
+
+  function handleNavClick(e, href) {
+    setOpen(false);
+    // Already on this page, or already navigating there: ignore the extra click.
+    if (href === pathname || href === pendingHref) {
+      e.preventDefault();
+      return;
+    }
+    setPendingHref(href);
   }
+
+  async function handleLogout() {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } finally {
+      window.location.href = '/admin/login?loggedout=true';
+    }
+  }
+
+  const currentHref = pendingHref ?? pathname;
 
   return (
     <>
+      {pendingHref && (
+        <div
+          className="fixed inset-x-0 top-0 z-[100] h-1 overflow-hidden bg-electric/20"
+          role="progressbar"
+          aria-label="Loading page"
+        >
+          <div
+            className="h-full w-1/3 bg-electric"
+            style={{ animation: 'mcb-progress 1.1s ease-in-out infinite' }}
+          />
+          <style>{'@keyframes mcb-progress { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }'}</style>
+        </div>
+      )}
+
       {/* Mobile top bar with hamburger trigger */}
       <div className="flex items-center justify-between border-b border-navy-700 bg-navy-900 p-4 md:hidden">
         <p className="font-display text-lg font-bold text-cream">
@@ -81,19 +135,22 @@ export default function AdminSidebar({ role }) {
 
               <nav className="flex flex-col gap-1">
                 {links.map((link) => {
-                  const active = pathname === link.href;
+                  const active = currentHref === link.href;
+                  const pending = pendingHref === link.href;
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
-                      onClick={() => setOpen(false)}
-                      className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                      onClick={(e) => handleNavClick(e, link.href)}
+                      aria-busy={pending}
+                      className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
                         active
                           ? 'bg-electric text-navy-900'
                           : 'text-navy hover:bg-navy-50 dark:text-cream dark:hover:bg-navy-800'
-                      }`}
+                      } ${pending ? 'opacity-80' : ''}`}
                     >
                       {link.label}
+                      {pending && <Spinner />}
                     </Link>
                   );
                 })}
@@ -103,9 +160,10 @@ export default function AdminSidebar({ role }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-navy-800"
+              disabled={loggingOut}
+              className="rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-500 hover:bg-red-50 disabled:opacity-60 dark:hover:bg-navy-800"
             >
-              Log Out
+              {loggingOut ? 'Logging out...' : 'Log Out'}
             </button>
           </div>
         </div>
@@ -119,16 +177,20 @@ export default function AdminSidebar({ role }) {
           </p>
           <nav className="flex flex-col gap-1">
             {links.map((link) => {
-              const active = pathname === link.href;
+              const active = currentHref === link.href;
+              const pending = pendingHref === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  aria-busy={pending}
+                  className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
                     active ? 'bg-electric text-navy-900' : 'text-navy-200 hover:bg-navy-700'
-                  }`}
+                  } ${pending ? 'opacity-80' : ''}`}
                 >
                   {link.label}
+                  {pending && <Spinner />}
                 </Link>
               );
             })}
@@ -139,9 +201,10 @@ export default function AdminSidebar({ role }) {
           <button
             type="button"
             onClick={handleLogout}
-            className="h-fit rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-navy-200 hover:bg-navy-700"
+            disabled={loggingOut}
+            className="h-fit rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-navy-200 hover:bg-navy-700 disabled:opacity-60"
           >
-            Log Out
+            {loggingOut ? 'Logging out...' : 'Log Out'}
           </button>
           <ThemeToggle className="!border-cream/30 !text-cream hover:!border-electric-400" />
         </div>
