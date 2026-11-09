@@ -9,6 +9,9 @@ import { getInventorySummary } from '@/lib/inventory';
 import { getSalesTotals, getLowStockProducts, getDailySales } from '@/lib/salesAnalytics';
 import SalesChart from '@/components/admin/SalesChart';
 import { formatDateEAT } from '@/lib/formatDate';
+import MonthProgress from '@/components/admin/MonthProgress';
+import { getEatMonthRange } from '@/lib/dateRanges';
+import { getSettings } from '@/lib/settings';
 
 function startOfToday() {
   const d = new Date();
@@ -40,6 +43,33 @@ async function getStats() {
     getDailySales(fourteenDaysAgo, endOfToday()),
   ]);
 
+  // This month so far vs the same number of days last month, in Kenyan time.
+  const thisMonth = getEatMonthRange(0);
+  const lastMonth = getEatMonthRange(-1);
+  const elapsedMs = Date.now() - thisMonth.start.getTime();
+  const compareEnd = new Date(Math.min(lastMonth.start.getTime() + elapsedMs, lastMonth.end.getTime() - 1));
+
+  const [monthSales, lastMonthSales, settings] = await Promise.all([
+    getSalesTotals(thisMonth.start, new Date(thisMonth.end.getTime() - 1)),
+    getSalesTotals(lastMonth.start, compareEnd),
+    getSettings(),
+  ]);
+
+  const month = {
+    monthLabel: new Date(thisMonth.start.getTime() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-KE', {
+      timeZone: 'Africa/Nairobi',
+      month: 'long',
+      year: 'numeric',
+    }),
+    dayOfMonth: Math.floor(elapsedMs / (24 * 60 * 60 * 1000)) + 1,
+    daysInMonth: Math.round((thisMonth.end.getTime() - thisMonth.start.getTime()) / (24 * 60 * 60 * 1000)),
+    revenue: monthSales.revenue,
+    profit: monthSales.profit,
+    prevRevenue: lastMonthSales.revenue,
+    prevProfit: lastMonthSales.profit,
+    target: settings.monthlyRevenueTarget || 0,
+  };
+
   // Fill in the last 14 calendar days with zeros where there were no sales,
   // in chronological order, for the chart.
   const salesByDate = Object.fromEntries(dailySales.map((d) => [d.date, d]));
@@ -65,6 +95,7 @@ async function getStats() {
     todaySales,
     lowStock,
     chartData,
+    month,
   };
 }
 
@@ -139,7 +170,9 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-        <div className="mt-8 rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
+      <MonthProgress {...stats.month} />
+
+      <div className="mt-8 rounded-2xl border border-navy-100 bg-white p-6 dark:border-navy-700 dark:bg-navy-800">
         <p className="mb-4 text-sm font-semibold text-navy dark:text-cream">Last 14 Days - Revenue & Profit</p>
         <SalesChart data={stats.chartData} />
       </div>

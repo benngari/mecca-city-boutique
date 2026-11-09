@@ -20,6 +20,7 @@ function isStaffAllowedPage(pathname) {
 function isStaffAllowedApi(pathname, method) {
   if (pathname === '/api/products' && method === 'GET') return true;
   if (/^\/api\/products\/[^/]+\/sell$/.test(pathname) && method === 'POST') return true;
+  if (pathname === '/api/sales/mine' && method === 'GET') return true;
   return false;
 }
 
@@ -37,9 +38,19 @@ export async function middleware(request) {
   const isAuditApi = pathname.startsWith('/api/audit-log');
   const isSettingsApi = pathname.startsWith('/api/settings');
   const isExpensesApi = pathname.startsWith('/api/expenses');
+  const isSalesApi = pathname.startsWith('/api/sales');
+  const isExportApi = pathname.startsWith('/api/export');
 
   const needsAuth =
-    isAdminRoute || isAdminApi || isUploadApi || isUsersApi || isAuditApi || isSettingsApi || isExpensesApi;
+    isAdminRoute ||
+    isAdminApi ||
+    isUploadApi ||
+    isUsersApi ||
+    isAuditApi ||
+    isSettingsApi ||
+    isExpensesApi ||
+    isSalesApi ||
+    isExportApi;
 
   if (!needsAuth) {
     return NextResponse.next();
@@ -80,5 +91,7 @@ export const config = {
     '/api/audit-log/:path*',
     '/api/settings/:path*',
     '/api/expenses/:path*',
+    '/api/sales/:path*',
+    '/api/export/:path*',
   ],
 };

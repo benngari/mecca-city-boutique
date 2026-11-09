@@ -6,6 +6,7 @@ import { useToast } from '@/components/admin/useToast';
 export default function SettingsPage() {
   const [piece, setPiece] = useState('3');
   const [ml, setMl] = useState('100');
+  const [target, setTarget] = useState('0');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { showToast, ToastDisplay } = useToast();
@@ -17,6 +18,7 @@ export default function SettingsPage() {
         if (data.settings) {
           setPiece(String(data.settings.defaultLowStockThresholdPiece));
           setMl(String(data.settings.defaultLowStockThresholdMl));
+          setTarget(String(data.settings.monthlyRevenueTarget || 0));
         }
       })
       .finally(() => setLoading(false));
@@ -32,6 +34,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           defaultLowStockThresholdPiece: Number(piece),
           defaultLowStockThresholdMl: Number(ml),
+          monthlyRevenueTarget: Number(target) || 0,
         }),
       });
       const data = await res.json();
@@ -84,6 +87,20 @@ export default function SettingsPage() {
             />
             <span className="mt-1 block text-xs font-normal text-navy-400">
               Applies to any product sold by millilitres (perfume refills, etc.) with no custom threshold set.
+            </span>
+          </label>
+
+          <label className="block text-sm font-semibold text-navy dark:text-cream">
+            Monthly revenue target (KSh)
+            <input
+              type="number"
+              min="0"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-navy-200 px-3 py-2.5 text-sm focus:border-electric focus:outline-none dark:border-navy-600 dark:bg-navy-900 dark:text-cream"
+            />
+            <span className="mt-1 block text-xs font-normal text-navy-400">
+              Shown as a progress bar on the Dashboard. Leave at 0 to hide it.
             </span>
           </label>
 

@@ -7,6 +7,7 @@ import ImageLightbox from '@/components/admin/ImageLightbox';
 import { useToast } from '@/components/admin/useToast';
 import { useConfirmDialog } from '@/components/admin/useConfirmDialog';
 import { useAdminSession } from '@/components/admin/AdminSessionContext';
+import ExportButton from '@/components/admin/ExportButton';
 
 function todayInputValue() {
   return new Date().toISOString().slice(0, 10);
@@ -26,6 +27,18 @@ export default function AdminProductsPage() {
   const [formSoldAt, setFormSoldAt] = useState(todayInputValue());
   const { showToast, ToastDisplay } = useToast();
   const { confirm, ConfirmDialog } = useConfirmDialog();
+  const [mySales, setMySales] = useState(null);
+
+  // Staff see what they have recorded today, so a sale is not entered twice.
+  async function loadMySales() {
+    try {
+      const res = await fetch('/api/sales/mine');
+      if (!res.ok) return;
+      setMySales(await res.json());
+    } catch {
+      // This panel is only a convenience - ignore network hiccups.
+    }
+  }
 
   async function loadProducts() {
     setLoading(true);
@@ -40,6 +53,7 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     loadProducts();
+    if (isStaff) loadMySales();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -121,6 +135,7 @@ export default function AdminProductsPage() {
 
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
       showToast(formType === 'sell' ? 'Sale recorded.' : 'Stock added.');
+      if (isStaff && formType === 'sell') loadMySales();
       closeStockForm();
     } catch {
       showToast('Something went wrong. Try again.', 'error');
@@ -137,14 +152,49 @@ export default function AdminProductsPage() {
           <p className="mt-1 text-sm text-navy-400 dark:text-navy-300">{products.length} product(s)</p>
         </div>
         {!isStaff && (
-          <Link
-            href="/admin/products/new"
-            className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-cream hover:bg-electric"
-          >
-            + Add Product
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportButton href="/api/export/products" label="Export CSV" />
+            <Link
+              href="/admin/products/new"
+              className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-cream hover:bg-electric"
+            >
+              + Add Product
+            </Link>
+          </div>
         )}
       </div>
+
+      {isStaff && mySales && (
+        <div className="mt-6 rounded-2xl border border-navy-100 bg-white p-5 dark:border-navy-700 dark:bg-navy-800">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-navy dark:text-cream">Your sales today</p>
+            <p className="text-sm text-navy-500 dark:text-navy-200">
+              {mySales.totals.count} sale(s) - KSh {mySales.totals.revenue.toLocaleString()}
+            </p>
+          </div>
+          {mySales.sales.length === 0 ? (
+            <p className="mt-3 text-sm text-navy-400 dark:text-navy-300">Nothing recorded yet today.</p>
+          ) : (
+            <ul className="mt-3 divide-y divide-navy-50 text-sm dark:divide-navy-700">
+              {mySales.sales.map((s) => (
+                <li key={s._id} className="flex items-center justify-between gap-3 py-2">
+                  <span className="text-navy dark:text-cream">
+                    {s.productName}{' '}
+                    <span className="text-navy-400 dark:text-navy-300">
+                      x {s.quantitySold}
+                      {s.unitType === 'ml' ? ' ml' : ''}
+                    </span>
+                  </span>
+                  <span className="whitespace-nowrap text-navy-500 dark:text-navy-200">
+                    KSh {s.revenue.toLocaleString()} -{' '}
+                    {new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <form
         onSubmit={(e) => {
@@ -242,7 +292,7 @@ export default function AdminProductsPage() {
                         onClick={() => (editingId === p._id ? closeStockForm() : openStockForm(p))}
                         className="font-semibold text-electric"
                       >
-                        {editingId === p._id ? 'Close' : 'Update Stock'}
+                        {editingId === p._id ? 'Close' : isStaff ? 'Record Sale' : 'Update Stock'}
                       </button>
                       {!isStaff && (
                         <>

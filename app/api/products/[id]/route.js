@@ -9,10 +9,16 @@ export async function GET(request, { params }) {
   await connectDB();
   const { id } = params;
 
-  const product = await Product.findOne({
+  // Buying prices are for the owner only - strip costPrice unless an owner is signed in.
+  const session = await getSession();
+  const canSeeCost = Boolean(session) && session.role !== 'staff';
+
+  let productQuery = Product.findOne({
     $or: [{ _id: isValidId(id) ? id : null }, { slug: id }],
     deletedAt: null,
-  }).lean();
+  });
+  if (!canSeeCost) productQuery = productQuery.select('-costPrice');
+  const product = await productQuery.lean();
 
   if (!product) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });

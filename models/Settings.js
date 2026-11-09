@@ -5,6 +5,7 @@ const SettingsSchema = new mongoose.Schema(
   {
     defaultLowStockThresholdPiece: { type: Number, default: 3 },
     defaultLowStockThresholdMl: { type: Number, default: 100 },
+    monthlyRevenueTarget: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

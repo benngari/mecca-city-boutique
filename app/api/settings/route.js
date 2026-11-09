@@ -29,13 +29,17 @@ export async function PUT(request) {
     if (body.defaultLowStockThresholdMl != null) {
       settings.defaultLowStockThresholdMl = Number(body.defaultLowStockThresholdMl);
     }
+    if (body.monthlyRevenueTarget != null) {
+      const target = Number(body.monthlyRevenueTarget);
+      settings.monthlyRevenueTarget = target >= 0 ? target : 0;
+    }
     await settings.save();
 
     await logAction({
       actor: session.email,
       action: 'settings.update',
-      target: 'Low stock thresholds',
-      details: `Piece: ${settings.defaultLowStockThresholdPiece}, ml: ${settings.defaultLowStockThresholdMl}`,
+      target: 'Settings',
+      details: `Piece: ${settings.defaultLowStockThresholdPiece}, ml: ${settings.defaultLowStockThresholdMl}, monthly target: KSh ${settings.monthlyRevenueTarget}`,
     });
 
     return NextResponse.json({ settings });

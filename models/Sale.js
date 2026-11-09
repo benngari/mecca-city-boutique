@@ -16,6 +16,10 @@ const SaleSchema = new mongoose.Schema(
     profit: { type: Number, required: true },
     soldAt: { type: Date, required: true, index: true }, // the actual day of the sale (can be backdated)
     recordedBy: { type: String, required: true },
+    // Voided sales are kept for the audit trail but no longer count toward revenue/profit.
+    voidedAt: { type: Date, default: null, index: true },
+    voidedBy: { type: String, default: null },
+    voidReason: { type: String, default: '' },
   },
   { timestamps: true }
 );

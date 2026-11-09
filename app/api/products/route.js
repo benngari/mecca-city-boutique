@@ -29,14 +29,18 @@ export async function GET(request) {
   if (featured === 'true') query.featured = true;
   if (stockStatus) query.stockStatus = stockStatus;
 
-  const [products, total] = await Promise.all([
-    Product.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean(),
-    Product.countDocuments(query),
-  ]);
+  // Buying prices are for the owner only - this endpoint is also reachable
+  // without logging in, so strip costPrice unless an owner is signed in.
+  const session = await getSession();
+  const canSeeCost = Boolean(session) && session.role !== 'staff';
+
+  let productsQuery = Product.find(query)
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  if (!canSeeCost) productsQuery = productsQuery.select('-costPrice');
+
+  const [products, total] = await Promise.all([productsQuery.lean(), Product.countDocuments(query)]);
 
   return NextResponse.json({ products, total, page, pages: Math.ceil(total / limit) });
 }

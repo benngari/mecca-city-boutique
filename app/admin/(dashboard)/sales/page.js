@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { getDailySales, getSalesList, getSalesTotals, getExpensesTotal } from '@/lib/salesAnalytics';
 import StatsCard from '@/components/admin/StatsCard';
+import VoidSaleButton from '@/components/admin/VoidSaleButton';
+import ExportButton from '@/components/admin/ExportButton';
 
 const RANGE_OPTIONS = [
   { value: '7', label: 'Last 7 Days' },
@@ -44,7 +46,8 @@ export default async function SalesPage({ searchParams }) {
             Every recorded sale, including ones entered late for a past day.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <ExportButton href={`/api/export/sales?days=${days}`} label="Export Sales CSV" />
           <Link
             href="/admin/expenses"
             className="rounded-full border border-navy-200 px-4 py-2 text-xs font-semibold text-navy hover:bg-navy-50 dark:border-navy-600 dark:text-cream dark:hover:bg-navy-800"
@@ -125,28 +128,43 @@ export default async function SalesPage({ searchParams }) {
                 <th className="px-4 py-3">Revenue</th>
                 <th className="px-4 py-3">Profit</th>
                 <th className="px-4 py-3">Recorded By</th>
+                <th className="px-4 py-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
               {recentSales.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-navy-300 dark:text-navy-400">
                     Nothing yet.
                   </td>
                 </tr>
               )}
               {recentSales.map((sale) => (
-                <tr key={sale._id} className="border-b border-navy-50 last:border-0 dark:border-navy-700">
+                <tr
+                  key={sale._id}
+                  className={`border-b border-navy-50 last:border-0 dark:border-navy-700 ${
+                    sale.voidedAt ? 'opacity-60' : ''
+                  }`}
+                >
                   <td className="whitespace-nowrap px-4 py-3 text-navy-500 dark:text-navy-200">
                     {new Date(sale.soldAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 text-navy dark:text-cream">{sale.productName}</td>
+                  <td className={`px-4 py-3 text-navy dark:text-cream ${sale.voidedAt ? 'line-through' : ''}`}>
+                    {sale.productName}
+                  </td>
                   <td className="px-4 py-3 text-navy-500 dark:text-navy-200">
                     {sale.quantitySold} {sale.unitType === 'ml' ? 'ml' : ''}
                   </td>
                   <td className="px-4 py-3 text-navy-500 dark:text-navy-200">KSh {sale.revenue.toLocaleString()}</td>
                   <td className="px-4 py-3 font-semibold text-emerald">KSh {sale.profit.toLocaleString()}</td>
                   <td className="px-4 py-3 text-navy-400 dark:text-navy-300">{sale.recordedBy}</td>
+                  <td className="px-4 py-3 text-right">
+                    <VoidSaleButton
+                      saleId={String(sale._id)}
+                      voided={Boolean(sale.voidedAt)}
+                      summary={`${sale.productName} x ${sale.quantitySold}`}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -73,7 +73,17 @@ export async function POST(request, { params }) {
       details: `Sold ${quantitySold} ${product.unitType} for KSh ${revenue} (profit KSh ${profit.toFixed(0)}), ${newQuantity} remaining - dated ${soldAt.toLocaleDateString()}`,
     });
 
-    return NextResponse.json({ product, sale });
+    const productData = product.toObject();
+    const saleData = sale.toObject();
+    if (session.role === 'staff') {
+      // Staff record sales but must never see buying prices or profit.
+      delete productData.costPrice;
+      delete saleData.costPricePerUnit;
+      delete saleData.cost;
+      delete saleData.profit;
+    }
+
+    return NextResponse.json({ product: productData, sale: saleData });
   } catch (err) {
     console.error('Record sale error:', err);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });

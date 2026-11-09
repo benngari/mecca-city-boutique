@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/admin/useToast';
 import { useConfirmDialog } from '@/components/admin/useConfirmDialog';
+import ExportButton from '@/components/admin/ExportButton';
 
 const CATEGORIES = [
   { value: 'rent', label: 'Rent' },
@@ -193,6 +194,7 @@ export default function ExpensesPage() {
         >
           Filter
         </button>
+        <ExportButton href={`/api/export/expenses?from=${from}&to=${to}`} label="Export CSV" />
         <p className="ml-auto text-sm font-semibold text-navy dark:text-cream">
           Total: <span className="text-red-500">KSh {total.toLocaleString()}</span>
         </p>
